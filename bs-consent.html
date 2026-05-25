@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Battery Survey — Harvest Consent</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #111110;
+    --ink-mid: #3d3d39;
+    --ink-light: #6e6e68;
+    --ink-faint: #a0a098;
+    --paper: #f5f4ef;
+    --paper-warm: #eeecea;
+    --card: #ffffff;
+    --border: #d8d6d0;
+    --border-light: #e8e6e0;
+    --green: #1a6e42;
+    --green-bright: #21a35e;
+    --green-bg: #eaf4ee;
+    --green-border: #a8d4b8;
+    --amber: #a05a00;
+    --amber-bg: #fdf0e0;
+    --amber-border: #e8c880;
+    --red: #9a1a1a;
+    --red-bg: #fdeaea;
+    --red-border: #e8b0b0;
+    --blue: #1a3a7a;
+    --blue-bg: #eaeff8;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--ink);
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+  }
+
+  .site-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo .bs-mark {
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+  }
+
+  .header-doc-ref {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Stages ── */
+  .stage { display: none; }
+  .stage.active { display: block; }
+
+  /* ── Setup stage ── */
+  .setup-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .setup-hero {
+    background: var(--ink);
+    margin: 0 -1.5rem;
+    padding: 2rem 1.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .setup-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 28px,
+      rgba(255,255,255,0.02) 28px, rgba(255,255,255,0.02) 29px
+    );
+    pointer-events: none;
+  }
+
+  .setup-hero .sh-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 0.6rem;
+  }
+
+  .setup-hero h1 {
+    font-family: var(--serif);
+    font-size: 1.9rem;
+    font-weight: normal;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .setup-hero p {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+  }
+
+  .setup-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .sc-header {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .sc-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .req-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+
+  .field input, .field select {
+    font-family: var(--mono);
+    font-size: 14px;
+    padding: 0.65rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+
+  .field input:focus, .field select:focus { border-color: var(--green-bright); background: var(--card); }
+  .field input.error { border-color: var(--red); background: var(--red-bg); }
+
+  .field-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  .callout {
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .callout.info { background: var(--green-bg); border-left: 3px solid var(--green); color: #0a3a1e; }
+  .callout.warn { background: var(--amber-bg); border-left: 3px solid var(--amber); color: #5a2a00; }
+
+  .callout strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  /* ── Buttons ── */
+  .btn-primary {
+    width: 100%;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 0.9rem;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-primary:hover { background: #2a2a28; }
+
+  .btn-green {
+    width: 100%;
+    background: var(--green-bright);
+    color: #fff;
+    border: none;
+    padding: 0.9rem;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-green:hover { background: var(--green); }
+
+  .btn-secondary {
+    width: 100%;
+    background: none;
+    color: var(--ink-mid);
+    border: 1px solid var(--border);
+    padding: 0.75rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-top: 0.5rem;
+  }
+
+  .btn-secondary:hover { background: var(--paper-warm); }
+
+  /* ── Document stage ── */
+  .doc-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 1.5rem 1.5rem 2rem;
+  }
+
+  .doc-header {
+    text-align: center;
+    padding: 1.5rem 0 1.25rem;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 1.5rem;
+  }
+
+  .doc-header .dh-bs {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.4rem;
+  }
+
+  .doc-header h2 {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    font-weight: normal;
+    margin-bottom: 0.3rem;
+  }
+
+  .doc-header .dh-ref {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+  .doc-meta {
+    background: var(--paper-warm);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem;
+    margin-bottom: 1.5rem;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+
+  .doc-meta-item .dmi-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .doc-meta-item .dmi-value {
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ── Document body ── */
+  .doc-body {
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    line-height: 1.75;
+  }
+
+  .doc-body h3 {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 1.5rem 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-body p { margin-bottom: 0.75rem; }
+  .doc-body p:last-child { margin-bottom: 0; }
+
+  .doc-body ul {
+    margin: 0.5rem 0 0.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .doc-body li { font-size: 0.85rem; color: var(--ink-mid); }
+
+  .doc-highlight {
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    margin: 1rem 0;
+    font-size: 0.85rem;
+    color: #5a2a00;
+  }
+
+  .doc-highlight strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  /* ── Acknowledgement checklist ── */
+  .ack-list {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .ack-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--card);
+    transition: border-color 0.15s, background 0.15s;
+  }
+
+  .ack-item.checked {
+    border-color: var(--green-border);
+    background: var(--green-bg);
+  }
+
+  .ack-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    margin-top: 1px;
+    transition: all 0.15s;
+    background: var(--card);
+  }
+
+  .ack-item.checked .ack-checkbox {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: #fff;
+  }
+
+  .ack-text {
+    font-size: 0.83rem;
+    color: var(--ink-mid);
+    line-height: 1.5;
+  }
+
+  .ack-item.checked .ack-text { color: #0a3a1e; }
+
+  /* ── Signature block ── */
+  .sig-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 1.5rem;
+  }
+
+  .sig-block-header {
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--paper-warm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .sbh-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .sbh-party {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+  }
+
+  .sig-block.signed .sig-block-header {
+    background: var(--green-bg);
+    border-bottom-color: var(--green-border);
+  }
+
+  .sig-block.signed .sbh-title { color: var(--green); }
+
+  .sig-body { padding: 1.25rem; }
+
+  .sig-name-field {
+    margin-bottom: 1rem;
+  }
+
+  .sig-name-field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .sig-name-field input {
+    font-family: Georgia, serif;
+    font-size: 1rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+
+  .sig-name-field input:focus { border-color: var(--green-bright); background: var(--card); }
+
+  /* ── Signature canvas ── */
+  .canvas-wrap {
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  .canvas-wrap canvas {
+    display: block;
+    width: 100%;
+    height: 120px;
+    cursor: crosshair;
+    touch-action: none;
+  }
+
+  .canvas-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .canvas-placeholder p {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--border);
+  }
+
+  .canvas-wrap.has-sig .canvas-placeholder { opacity: 0; }
+  .canvas-wrap.signed-done { border-color: var(--green-border); background: var(--green-bg); pointer-events: none; }
+
+  .canvas-controls {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+
+  .btn-clear {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--red);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 0;
+    text-decoration: underline;
+  }
+
+  .sig-meta {
+    margin-top: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sig-meta-row {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    display: flex;
+    gap: 8px;
+  }
+
+  .sig-meta-row .smr-label {
+    color: var(--ink-light);
+    min-width: 60px;
+  }
+
+  /* Signed display */
+  .sig-done-display {
+    display: none;
+    padding: 0.75rem 0;
+    text-align: center;
+  }
+
+  .sig-done-display img {
+    max-width: 100%;
+    height: 80px;
+    object-fit: contain;
+    border-bottom: 1px solid var(--green-border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .sig-done-display .sdd-name {
+    font-family: var(--serif);
+    font-size: 1rem;
+    color: var(--ink);
+  }
+
+  .sig-done-display .sdd-time {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 3px;
+  }
+
+  .sig-block.signed .sig-done-display { display: block; }
+  .sig-block.signed .sig-input-area { display: none; }
+
+  /* ── Complete stage ── */
+  .complete-wrap {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+  }
+
+  .complete-hero {
+    text-align: center;
+    padding: 1.5rem 0 2rem;
+  }
+
+  .complete-hero .ch-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+
+  .complete-hero h2 {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+  }
+
+  .complete-hero p {
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    max-width: 380px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .consent-ref-box {
+    background: var(--ink);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    text-align: center;
+    margin: 1.25rem 0;
+  }
+
+  .crb-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    margin-bottom: 0.5rem;
+  }
+
+  .crb-ref {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: var(--green-bright);
+    letter-spacing: 0.12em;
+  }
+
+  .crb-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    margin-top: 0.35rem;
+  }
+
+  .complete-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .upload-action {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .ua-icon { font-size: 1.5rem; flex-shrink: 0; }
+
+  .ua-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .ua-sub {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .ua-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+    background: var(--green-bright);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  .ua-btn:hover { background: var(--green); }
+
+  .proceed-note {
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    font-size: 0.85rem;
+    color: #0a3a1e;
+    margin-top: 1rem;
+    line-height: 1.6;
+  }
+
+  .proceed-note strong {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--ink);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .site-footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+
+  .site-footer a { color: var(--green-bright); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="site-logo">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <span class="header-doc-ref" id="header-ref">Consent form</span>
+</header>
+
+<!-- ══════════════════════════════════════════
+     STAGE 1 — SETUP (harvester enters details)
+═══════════════════════════════════════════ -->
+<div class="stage active" id="stage-setup">
+  <div class="setup-hero">
+    <div class="sh-label">Pre-harvest consent</div>
+    <h1>Before the harvest begins</h1>
+    <p>Complete this form before plugging in the diagnostic device. Both the vehicle owner and the harvester must sign. The signed record is stored permanently alongside the battery data.</p>
+  </div>
+
+  <div class="setup-wrap">
+
+    <div class="setup-card">
+      <div class="sc-header">Harvester — enter these details first</div>
+      <div class="sc-body">
+
+        <div class="callout info">
+          <strong>Harvester — fill this in before handing the phone to the owner</strong>
+          Enter the vehicle registration and your Harvester ID. Then hand the phone to the vehicle owner to read and sign. You will countersign afterwards.
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Vehicle registration</label>
+            <input type="text" id="s-reg" placeholder="BK17ABC"
+              oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')">
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Harvester ID</label>
+            <input type="text" id="s-hid" placeholder="HV-00001">
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Vehicle make</label>
+            <select id="s-make">
+              <option value="">Select</option>
+              <option>Renault</option>
+              <option>Nissan</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Vehicle model</label>
+            <select id="s-model">
+              <option value="">Select make</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Dongle used</label>
+            <select id="s-dongle">
+              <option value="">Select</option>
+              <option>Konnwei KW902</option>
+              <option>ELM327 v1.5 Bluetooth</option>
+              <option>OBDLink LX</option>
+              <option>OBDLink MX+</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> App to be used</label>
+            <select id="s-app">
+              <option value="">Select</option>
+              <option>CanZE</option>
+              <option>KangooZE app</option>
+              <option>LeafSpy Pro</option>
+              <option>LeafSpy Lite</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="startConsent()">Prepare consent document →</button>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     STAGE 2 — OWNER READS AND SIGNS
+═══════════════════════════════════════════ -->
+<div class="stage" id="stage-owner">
+  <div class="doc-wrap">
+
+    <div class="doc-header">
+      <div class="dh-bs">Battery Survey — Pre-Harvest Consent</div>
+      <h2>Vehicle Diagnostic Test Agreement</h2>
+      <div class="dh-ref" id="doc-ref-display"></div>
+    </div>
+
+    <div class="doc-meta" id="doc-meta">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="doc-body">
+
+      <h3>1. What is about to happen</h3>
+      <p>A Battery Survey harvester is about to connect a Bluetooth OBD2 diagnostic device to the OBD port of your vehicle. Using an approved read-only diagnostic application, they will read battery health data from your vehicle's Battery Management System and screen-record the results.</p>
+      <p>The data collected will be submitted to the Battery Survey open database at batterysurvey.info, where it will be published permanently under a Creative Commons licence and may be accessed by any member of the public.</p>
+
+      <h3>2. The diagnostic device</h3>
+      <p>The device used is: <strong id="doc-dongle"></strong></p>
+      <p>The application used is: <strong id="doc-app"></strong></p>
+      <p>Both are on the Battery Survey approved hardware list. The device is entirely passive and read-only. It can read data from your vehicle's diagnostic port but cannot write data to, reprogram, or modify any vehicle system.</p>
+
+      <h3>3. What data will be collected</h3>
+      <ul>
+        <li>Battery State of Health (SOH) percentage</li>
+        <li>Individual cell voltages and cell balance (delta)</li>
+        <li>Battery temperature readings</li>
+        <li>Cumulative charge counts — rapid DC and slow AC</li>
+        <li>BMS reprogramming history (Renault vehicles)</li>
+        <li>Pack voltage and amp-hour capacity</li>
+        <li>Odometer reading</li>
+        <li>Vehicle Identification Number (VIN) as read from BMS</li>
+      </ul>
+      <p>Your name and personal details are not published. The record is associated with the vehicle registration number only.</p>
+
+      <h3>4. Pre-existing fault codes</h3>
+      <div class="doc-highlight">
+        <strong>Important — please read carefully</strong>
+        Your vehicle may contain stored fault codes in its onboard computer that are not currently displayed on the dashboard. Connecting a diagnostic device sometimes causes the vehicle to display these codes as warning lights. If this happens, it indicates a pre-existing condition in your vehicle — the diagnostic device cannot create new faults. Battery Survey and the harvester accept no liability for pre-existing vehicle faults that become visible during testing.
+      </div>
+
+      <h3>5. Limitation of liability</h3>
+      <p>Battery Survey is a data collection service. The battery health record produced is a point-in-time snapshot of data read from your vehicle's own systems. It is not a warranty, guarantee, mechanical inspection, or professional assessment. Neither Battery Survey nor the harvester accepts liability for any decisions made based on this data.</p>
+      <p>The harvester is using approved, read-only hardware as specified in clause 2. In the unlikely event of damage caused directly by negligent use of unapproved hardware, liability rests with the harvester personally, not with Battery Survey.</p>
+
+      <h3>6. Your consent</h3>
+      <p>By signing below you confirm that you are the registered keeper or authorised representative of the vehicle, that you have read and understood this document, and that you give your informed consent for the diagnostic test to proceed on the terms described above.</p>
+
+      <!-- Acknowledgement checklist -->
+      <div class="ack-list" id="ack-list">
+        <div class="ack-item" onclick="toggleAck(this)">
+          <div class="ack-checkbox"></div>
+          <div class="ack-text">I have read and understood what the diagnostic test involves and what data will be collected.</div>
+        </div>
+        <div class="ack-item" onclick="toggleAck(this)">
+          <div class="ack-checkbox"></div>
+          <div class="ack-text">I understand that pre-existing fault codes may become visible during testing and that this is not caused by the diagnostic device.</div>
+        </div>
+        <div class="ack-item" onclick="toggleAck(this)">
+          <div class="ack-checkbox"></div>
+          <div class="ack-text">I understand that the battery health record will be published permanently in the Battery Survey public database.</div>
+        </div>
+        <div class="ack-item" onclick="toggleAck(this)">
+          <div class="ack-checkbox"></div>
+          <div class="ack-text">I am the registered keeper or have authority to authorise this test on this vehicle.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Owner signature block -->
+    <div class="sig-block" id="owner-sig-block">
+      <div class="sig-block-header">
+        <span class="sbh-title">Vehicle owner signature</span>
+        <span class="sbh-party">Party 1 of 2</span>
+      </div>
+      <div class="sig-body">
+
+        <div class="sig-done-display" id="owner-done-display">
+          <img id="owner-sig-img" src="" alt="Owner signature">
+          <div class="sdd-name" id="owner-done-name"></div>
+          <div class="sdd-time" id="owner-done-time"></div>
+        </div>
+
+        <div class="sig-input-area" id="owner-input-area">
+          <div class="sig-name-field">
+            <label>Your full name</label>
+            <input type="text" id="owner-name" placeholder="Type your full name here">
+          </div>
+
+          <div class="canvas-wrap" id="owner-canvas-wrap">
+            <canvas id="owner-canvas" width="800" height="240"></canvas>
+            <div class="canvas-placeholder"><p>Sign here with your finger</p></div>
+          </div>
+          <div class="canvas-controls">
+            <button class="btn-clear" onclick="clearCanvas('owner')">Clear signature</button>
+          </div>
+
+          <div class="sig-meta" id="owner-meta">
+            <div class="sig-meta-row"><span class="smr-label">Time</span><span id="owner-time">—</span></div>
+            <div class="sig-meta-row"><span class="smr-label">Location</span><span id="owner-location">Requesting...</span></div>
+            <div class="sig-meta-row"><span class="smr-label">Device</span><span id="owner-device"></span></div>
+          </div>
+
+          <button class="btn-green" onclick="signOwner()" style="margin-top:1rem;">
+            I agree and sign this document →
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="harvester-sig-section" style="display:none;">
+
+      <div style="background:var(--blue-bg);border:1px solid #b8c8f0;border-radius:var(--radius);padding:1rem 1.25rem;margin:1.5rem 0;font-size:0.85rem;color:var(--blue);line-height:1.6;">
+        <strong style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:3px;">Hand the phone back to the harvester</strong>
+        The vehicle owner has signed. The harvester must now countersign to confirm they are using approved hardware and will follow the Battery Survey standard.
+      </div>
+
+      <!-- Harvester countersignature block -->
+      <div class="sig-block" id="harvester-sig-block">
+        <div class="sig-block-header">
+          <span class="sbh-title">Harvester countersignature</span>
+          <span class="sbh-party">Party 2 of 2</span>
+        </div>
+        <div class="sig-body">
+
+          <div class="doc-body" style="margin-bottom:1rem;">
+            <h3>Harvester declaration</h3>
+            <p>By countersigning I confirm that:</p>
+            <ul>
+              <li>I am harvester <strong id="harvester-id-display"></strong>, a registered Battery Survey harvester</li>
+              <li>I am using the approved device: <strong id="harvester-dongle-display"></strong></li>
+              <li>I am using the approved application: <strong id="harvester-app-display"></strong></li>
+              <li>I will follow the Battery Survey harvester standard throughout this test</li>
+              <li>I will submit accurate, unmanipulated data to the Battery Survey database</li>
+              <li>I accept personal liability for any damage caused by use of unapproved hardware</li>
+            </ul>
+          </div>
+
+          <div class="sig-done-display" id="harvester-done-display">
+            <img id="harvester-sig-img" src="" alt="Harvester signature">
+            <div class="sdd-name" id="harvester-done-name"></div>
+            <div class="sdd-time" id="harvester-done-time"></div>
+          </div>
+
+          <div class="sig-input-area" id="harvester-input-area">
+            <div class="sig-name-field">
+              <label>Your full name</label>
+              <input type="text" id="harvester-name" placeholder="Type your full name here">
+            </div>
+
+            <div class="canvas-wrap" id="harvester-canvas-wrap">
+              <canvas id="harvester-canvas" width="800" height="240"></canvas>
+              <div class="canvas-placeholder"><p>Sign here with your finger</p></div>
+            </div>
+            <div class="canvas-controls">
+              <button class="btn-clear" onclick="clearCanvas('harvester')">Clear signature</button>
+            </div>
+
+            <div class="sig-meta" id="harvester-meta">
+              <div class="sig-meta-row"><span class="smr-label">Time</span><span id="harvester-time">—</span></div>
+              <div class="sig-meta-row"><span class="smr-label">Location</span><span id="harvester-location">Requesting...</span></div>
+              <div class="sig-meta-row"><span class="smr-label">Device</span><span id="harvester-device"></span></div>
+            </div>
+
+            <button class="btn-green" onclick="signHarvester()" style="margin-top:1rem;">
+              I confirm and countersign →
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     STAGE 3 — COMPLETE
+═══════════════════════════════════════════ -->
+<div class="stage" id="stage-complete">
+  <div class="complete-wrap">
+
+    <div class="complete-hero">
+      <div class="ch-icon">✅</div>
+      <h2>Both parties have signed</h2>
+      <p>The consent record is complete. Save or upload it now before beginning the harvest.</p>
+    </div>
+
+    <div class="consent-ref-box">
+      <div class="crb-label">Consent reference number</div>
+      <div class="crb-ref" id="final-ref"></div>
+      <div class="crb-sub">Enter this reference in the harvest submission form</div>
+    </div>
+
+    <div class="complete-actions">
+
+      <div class="upload-action">
+        <div class="ua-icon">☁️</div>
+        <div>
+          <div class="ua-title">Upload to Battery Survey Drive</div>
+          <div class="ua-sub">Stores the signed record permanently alongside the harvest</div>
+        </div>
+        <a class="ua-btn" id="drive-upload-btn" href="DRIVE_CONSENT_FOLDER_LINK_HERE" target="_blank" rel="noopener">
+          Open folder →
+        </a>
+      </div>
+
+      <div class="upload-action">
+        <div class="ua-icon">💾</div>
+        <div>
+          <div class="ua-title">Download signed record</div>
+          <div class="ua-sub">Save to phone as backup before uploading</div>
+        </div>
+        <button class="ua-btn" onclick="downloadRecord()">Download</button>
+      </div>
+
+      <div class="upload-action">
+        <div class="ua-icon">📋</div>
+        <div>
+          <div class="ua-title">Copy consent reference</div>
+          <div class="ua-sub">Paste into the harvest submission form</div>
+        </div>
+        <button class="ua-btn" id="copy-ref-btn" onclick="copyRef()">Copy</button>
+      </div>
+
+    </div>
+
+    <div class="proceed-note">
+      <strong>You may now proceed with the harvest</strong>
+      Both parties have signed. The consent reference <span id="proceed-ref" style="font-family:var(--mono);font-weight:500;"></span> must be entered in the Battery Survey submission form when submitting the harvest data.
+    </div>
+
+    <a href="bs-submit.html" class="btn-primary" style="display:block;text-align:center;text-decoration:none;margin-top:1.5rem;">
+      Go to harvest submission form →
+    </a>
+
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Consent records are stored permanently · <a href="bs-data-standard-v1.1.html">Data standard v1.1</a></p>
+</footer>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+const state = {
+  reg: '', hid: '', make: '', model: '', dongle: '', app: '',
+  ownerName: '', ownerSig: '', ownerTime: '', ownerLat: '', ownerLng: '',
+  harvesterName: '', harvesterSig: '', harvesterTime: '', harvesterLat: '', harvesterLng: '',
+  consentRef: '', docHash: ''
+};
+
+// ── Model cascade ─────────────────────────────────────────────────────────────
+const MODELS = {
+  Renault: ['Kangoo ZE 22', 'Kangoo ZE 33', 'Zoe ZE40', 'Zoe ZE50'],
+  Nissan:  ['Leaf 24kWh', 'Leaf 30kWh', 'Leaf 40kWh', 'Leaf 62kWh (e+)']
+};
+
+document.getElementById('s-make').addEventListener('change', function() {
+  const modelSel = document.getElementById('s-model');
+  modelSel.innerHTML = '<option value="">Select model</option>';
+  if (this.value && MODELS[this.value]) {
+    MODELS[this.value].forEach(m => {
+      const o = document.createElement('option');
+      o.value = o.textContent = m;
+      modelSel.appendChild(o);
+    });
+  }
+});
+
+// ── Consent reference generator ───────────────────────────────────────────────
+function genRef(reg) {
+  const now = new Date();
+  const d = now.toISOString().slice(0,10).replace(/-/g,'');
+  const rand = Math.random().toString(36).slice(2,6).toUpperCase();
+  return `BSC-${d}-${reg}-${rand}`;
+}
+
+// ── Simple hash for document integrity ───────────────────────────────────────
+async function hashContent(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('').slice(0,16);
+}
+
+// ── Stage 1: Start consent ───────────────────────────────────────────────────
+function startConsent() {
+  const reg    = document.getElementById('s-reg').value.trim();
+  const hid    = document.getElementById('s-hid').value.trim();
+  const make   = document.getElementById('s-make').value;
+  const model  = document.getElementById('s-model').value;
+  const dongle = document.getElementById('s-dongle').value;
+  const app    = document.getElementById('s-app').value;
+
+  // Validate
+  let valid = true;
+  [['s-reg',reg],['s-hid',hid],['s-make',make],['s-model',model],['s-dongle',dongle],['s-app',app]].forEach(([id,v]) => {
+    const el = document.getElementById(id);
+    if (!v) { el.classList.add('error'); valid = false; }
+    else el.classList.remove('error');
+  });
+  if (!valid) return;
+
+  Object.assign(state, { reg, hid, make, model, dongle, app });
+  state.consentRef = genRef(reg);
+
+  // Populate document
+  document.getElementById('doc-ref-display').textContent = state.consentRef;
+  document.getElementById('header-ref').textContent = state.consentRef;
+  document.getElementById('doc-dongle').textContent = dongle;
+  document.getElementById('doc-app').textContent = app;
+  document.getElementById('harvester-id-display').textContent = hid;
+  document.getElementById('harvester-dongle-display').textContent = dongle;
+  document.getElementById('harvester-app-display').textContent = app;
+
+  const now = new Date();
+  document.getElementById('doc-meta').innerHTML = `
+    <div class="doc-meta-item">
+      <span class="dmi-label">Registration</span>
+      <span class="dmi-value">${reg}</span>
+    </div>
+    <div class="doc-meta-item">
+      <span class="dmi-label">Vehicle</span>
+      <span class="dmi-value">${make} ${model}</span>
+    </div>
+    <div class="doc-meta-item">
+      <span class="dmi-label">Harvester ID</span>
+      <span class="dmi-value">${hid}</span>
+    </div>
+    <div class="doc-meta-item">
+      <span class="dmi-label">Date</span>
+      <span class="dmi-value">${now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</span>
+    </div>
+    <div class="doc-meta-item">
+      <span class="dmi-label">Consent ref</span>
+      <span class="dmi-value">${state.consentRef}</span>
+    </div>
+    <div class="doc-meta-item">
+      <span class="dmi-label">Dongle</span>
+      <span class="dmi-value">${dongle}</span>
+    </div>
+  `;
+
+  // Set device string in both sig blocks
+  const ua = navigator.userAgent.slice(0,60);
+  document.getElementById('owner-device').textContent = ua;
+  document.getElementById('harvester-device').textContent = ua;
+
+  // Request location
+  requestLocation('owner');
+
+  // Init canvases
+  initCanvas('owner');
+  initCanvas('harvester');
+
+  showStage('stage-owner');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Location ────────────────────────────────────────────────────────────────
+function requestLocation(party) {
+  if (!navigator.geolocation) {
+    document.getElementById(party + '-location').textContent = 'Not available';
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(5);
+      const lng = pos.coords.longitude.toFixed(5);
+      document.getElementById(party + '-location').textContent = `${lat}, ${lng}`;
+      if (party === 'owner') { state.ownerLat = lat; state.ownerLng = lng; }
+      else { state.harvesterLat = lat; state.harvesterLng = lng; }
+    },
+    () => { document.getElementById(party + '-location').textContent = 'Not captured'; }
+  );
+}
+
+// ── Canvas signature ─────────────────────────────────────────────────────────
+function initCanvas(party) {
+  const canvas = document.getElementById(party + '-canvas');
+  const wrap = document.getElementById(party + '-canvas-wrap');
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#111110';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  let drawing = false;
+  let hasSig = false;
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    if (e.touches) {
+      return {
+        x: (e.touches[0].clientX - rect.left) * scaleX,
+        y: (e.touches[0].clientY - rect.top) * scaleY
+      };
+    }
+    return {
+      x: (e.clientX - rect.left) * scaleX,
+      y: (e.clientY - rect.top) * scaleY
+    };
+  }
+
+  function start(e) {
+    e.preventDefault();
+    drawing = true;
+    const {x,y} = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault();
+    const {x,y} = getPos(e);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    if (!hasSig) { hasSig = true; wrap.classList.add('has-sig'); }
+  }
+
+  function end(e) {
+    e.preventDefault();
+    drawing = false;
+  }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', draw, {passive:false});
+  canvas.addEventListener('touchend', end, {passive:false});
+}
+
+function clearCanvas(party) {
+  const canvas = document.getElementById(party + '-canvas');
+  const wrap = document.getElementById(party + '-canvas-wrap');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  wrap.classList.remove('has-sig');
+}
+
+function isCanvasEmpty(party) {
+  const canvas = document.getElementById(party + '-canvas');
+  const data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+  return !data.some(v => v !== 0);
+}
+
+// ── Acknowledgement checkboxes ──────────────────────────────────────────────
+function toggleAck(el) { el.classList.toggle('checked'); el.querySelector('.ack-checkbox').textContent = el.classList.contains('checked') ? '✓' : ''; }
+
+function allAcksChecked() {
+  return Array.from(document.querySelectorAll('.ack-item')).every(el => el.classList.contains('checked'));
+}
+
+// ── Owner signing ────────────────────────────────────────────────────────────
+function signOwner() {
+  const name = document.getElementById('owner-name').value.trim();
+  if (!name) { alert('Please type your full name before signing.'); return; }
+  if (!allAcksChecked()) { alert('Please tick all four acknowledgement boxes before signing.'); return; }
+  if (isCanvasEmpty('owner')) { alert('Please sign in the box before confirming.'); return; }
+
+  const canvas = document.getElementById('owner-canvas');
+  const sigData = canvas.toDataURL('image/png');
+  const now = new Date();
+  const timeStr = now.toUTCString();
+
+  state.ownerName = name;
+  state.ownerSig = sigData;
+  state.ownerTime = timeStr;
+
+  // Show signed state
+  document.getElementById('owner-sig-img').src = sigData;
+  document.getElementById('owner-done-name').textContent = name;
+  document.getElementById('owner-done-time').textContent = timeStr;
+  document.getElementById('owner-sig-block').classList.add('signed');
+  document.getElementById('owner-canvas-wrap').classList.add('signed-done');
+
+  // Update live time display
+  document.getElementById('owner-time').textContent = timeStr;
+
+  // Show harvester section
+  document.getElementById('harvester-sig-section').style.display = 'block';
+  requestLocation('harvester');
+  document.getElementById('harvester-sig-section').scrollIntoView({behavior:'smooth'});
+}
+
+// ── Harvester countersigning ─────────────────────────────────────────────────
+async function signHarvester() {
+  const name = document.getElementById('harvester-name').value.trim();
+  if (!name) { alert('Please type your full name before countersigning.'); return; }
+  if (isCanvasEmpty('harvester')) { alert('Please sign in the box before confirming.'); return; }
+
+  const canvas = document.getElementById('harvester-canvas');
+  const sigData = canvas.toDataURL('image/png');
+  const now = new Date();
+  const timeStr = now.toUTCString();
+
+  state.harvesterName = name;
+  state.harvesterSig = sigData;
+  state.harvesterTime = timeStr;
+
+  document.getElementById('harvester-sig-img').src = sigData;
+  document.getElementById('harvester-done-name').textContent = name;
+  document.getElementById('harvester-done-time').textContent = timeStr;
+  document.getElementById('harvester-sig-block').classList.add('signed');
+  document.getElementById('harvester-canvas-wrap').classList.add('signed-done');
+  document.getElementById('harvester-time').textContent = timeStr;
+
+  // Generate document hash from all key content
+  const docContent = [
+    state.consentRef, state.reg, state.hid, state.make, state.model,
+    state.dongle, state.app, state.ownerName, state.ownerTime,
+    state.ownerLat, state.ownerLng, name, timeStr
+  ].join('|');
+  state.docHash = await hashContent(docContent);
+
+  // Complete
+  document.getElementById('final-ref').textContent = state.consentRef;
+  document.getElementById('proceed-ref').textContent = state.consentRef;
+
+  // Update Drive upload filename in URL hint
+  const fname = `consent-${state.reg}-${new Date().toISOString().slice(0,10)}.html`;
+  document.getElementById('drive-upload-btn').title = fname;
+
+  showStage('stage-complete');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── Download signed record ────────────────────────────────────────────────────
+function downloadRecord() {
+  const now = new Date();
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Battery Survey Consent — ${state.consentRef}</title>
+<style>
+  body{font-family:Georgia,serif;max-width:700px;margin:2rem auto;padding:0 1.5rem;color:#111;font-size:14px;line-height:1.7;}
+  h1{font-size:1.4rem;font-weight:normal;margin-bottom:0.5rem;}
+  .ref{font-family:monospace;font-size:0.9rem;color:#666;margin-bottom:1.5rem;}
+  .meta{background:#f5f5f0;border:1px solid #ddd;padding:1rem;border-radius:4px;display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-bottom:1.5rem;font-family:monospace;font-size:12px;}
+  .meta-item .label{color:#999;font-size:11px;display:block;}
+  h2{font-family:monospace;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;border-bottom:1px solid #ddd;padding-bottom:0.3rem;margin:1.5rem 0 0.5rem;}
+  p,li{font-size:13px;margin-bottom:0.5rem;}
+  ul{margin:0.5rem 0 0.75rem 1.5rem;}
+  .warn{background:#fef0e0;border-left:3px solid #e08000;padding:0.75rem 1rem;margin:0.75rem 0;font-size:13px;}
+  .sig-block{border:1px solid #ddd;border-radius:4px;margin-top:1.5rem;overflow:hidden;}
+  .sig-header{background:#f5f5f0;border-bottom:1px solid #ddd;padding:0.6rem 1rem;font-family:monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;color:#666;display:flex;justify-content:space-between;}
+  .sig-body{padding:1rem;}
+  .sig-img{max-width:100%;height:80px;object-fit:contain;display:block;border-bottom:1px solid #eee;padding-bottom:0.5rem;margin-bottom:0.5rem;}
+  .sig-name{font-size:1rem;font-family:Georgia,serif;}
+  .sig-meta{font-family:monospace;font-size:11px;color:#999;margin-top:0.3rem;}
+  .hash{font-family:monospace;font-size:11px;background:#111;color:#21a35e;padding:0.75rem 1rem;border-radius:4px;margin-top:2rem;word-break:break-all;}
+  .hash .hl{color:#999;display:block;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
+  @media print{body{max-width:none;margin:1cm;}h1{font-size:1.2rem;}}
+</style>
+</head>
+<body>
+<div style="font-family:monospace;font-size:10px;color:#999;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:0.5rem;">Battery Survey — Pre-Harvest Consent Record</div>
+<h1>Vehicle Diagnostic Test Agreement</h1>
+<div class="ref">${state.consentRef}</div>
+
+<div class="meta">
+  <div class="meta-item"><span class="label">Registration</span>${state.reg}</div>
+  <div class="meta-item"><span class="label">Vehicle</span>${state.make} ${state.model}</div>
+  <div class="meta-item"><span class="label">Harvester ID</span>${state.hid}</div>
+  <div class="meta-item"><span class="label">Date</span>${now.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</div>
+  <div class="meta-item"><span class="label">Dongle</span>${state.dongle}</div>
+  <div class="meta-item"><span class="label">App</span>${state.app}</div>
+</div>
+
+<h2>1. What happened</h2>
+<p>A Battery Survey harvester connected a Bluetooth OBD2 diagnostic device (${state.dongle}) to the OBD port of vehicle ${state.reg} and used the approved read-only application (${state.app}) to read battery health data from the vehicle's Battery Management System.</p>
+
+<h2>2. The device</h2>
+<p>The device used (${state.dongle}) is on the Battery Survey approved hardware list. It is entirely passive and read-only. It cannot write data to, reprogram, or modify any vehicle system.</p>
+
+<h2>3. Pre-existing fault codes</h2>
+<div class="warn">The vehicle may contain stored fault codes that are not displayed on the dashboard. Connecting a diagnostic device may cause these to display as warning lights. This indicates a pre-existing condition — the diagnostic device cannot create new faults. Battery Survey and the harvester accept no liability for pre-existing vehicle faults that become visible during testing.</div>
+
+<h2>4. Limitation of liability</h2>
+<p>The battery health record produced is a point-in-time snapshot of data read from the vehicle's own systems. It is not a warranty, guarantee, or professional assessment. Neither Battery Survey nor the harvester accepts liability for decisions made based on this data.</p>
+
+<h2>5. Owner signature</h2>
+<div class="sig-block">
+  <div class="sig-header"><span>Vehicle owner — Party 1 of 2</span><span>Signed</span></div>
+  <div class="sig-body">
+    <img class="sig-img" src="${state.ownerSig}" alt="Owner signature">
+    <div class="sig-name">${state.ownerName}</div>
+    <div class="sig-meta">Signed: ${state.ownerTime}</div>
+    <div class="sig-meta">Location: ${state.ownerLat ? state.ownerLat + ', ' + state.ownerLng : 'Not captured'}</div>
+  </div>
+</div>
+
+<h2>6. Harvester countersignature</h2>
+<div class="sig-block">
+  <div class="sig-header"><span>Harvester ${state.hid} — Party 2 of 2</span><span>Countersigned</span></div>
+  <div class="sig-body">
+    <img class="sig-img" src="${state.harvesterSig}" alt="Harvester signature">
+    <div class="sig-name">${state.harvesterName}</div>
+    <div class="sig-meta">Signed: ${state.harvesterTime}</div>
+    <div class="sig-meta">Location: ${state.harvesterLat ? state.harvesterLat + ', ' + state.harvesterLng : 'Not captured'}</div>
+  </div>
+</div>
+
+<div class="hash">
+  <span class="hl">Document integrity hash (SHA-256 truncated)</span>
+  ${state.docHash}
+</div>
+
+<p style="font-family:monospace;font-size:10px;color:#999;margin-top:1.5rem;">Battery Survey · batterysurvey.info · Open data · CC BY 4.0 · Generated ${now.toUTCString()}</p>
+</body>
+</html>`;
+
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `consent-${state.reg}-${now.toISOString().slice(0,10)}.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Copy reference ────────────────────────────────────────────────────────────
+function copyRef() {
+  navigator.clipboard.writeText(state.consentRef).then(() => {
+    const btn = document.getElementById('copy-ref-btn');
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// ── Stage switcher ────────────────────────────────────────────────────────────
+function showStage(id) {
+  document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Survey — Data Standard v1.1</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #111110;
+    --ink-mid: #3d3d39;
+    --ink-light: #6e6e68;
+    --ink-faint: #a0a098;
+    --green: #1a6e42;
+    --green-bright: #21a35e;
+    --green-light: #eaf4ee;
+    --green-mid: #a8d4b8;
+    --amber: #a05a00;
+    --amber-light: #fdf0e0;
+    --red: #9a1a1a;
+    --red-light: #fdeaea;
+    --blue: #1a3a7a;
+    --blue-light: #eaeff8;
+    --purple: #5a1a8a;
+    --purple-light: #f0e8f8;
+    --border: #d8d6d0;
+    --border-light: #e8e6e0;
+    --bg: #f5f4ef;
+    --bg-card: #ffffff;
+    --paper-warm: #eeecea;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── Shared site header ── */
+  .site-header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo .bs-mark {
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .site-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .site-nav a:hover { color: rgba(255,255,255,0.85); }
+  .site-nav a.active { color: #fff; }
+
+  /* ── Document content wrapper ── */
+  .doc-wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 0 2rem;
+  }
+
+  .cover {
+    background: var(--ink);
+    color: #fff;
+    padding: 3rem 2.5rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::after {
+    content: 'BS';
+    position: absolute;
+    right: -20px;
+    top: -30px;
+    font-family: var(--mono);
+    font-size: 14rem;
+    font-weight: bold;
+    color: rgba(255,255,255,0.03);
+    pointer-events: none;
+    line-height: 1;
+  }
+
+  .cover-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 1rem;
+  }
+
+  .cover h1 {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    font-weight: normal;
+    line-height: 1.2;
+    color: #fff;
+    margin-bottom: 0.75rem;
+    max-width: 600px;
+  }
+
+  .cover-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .cover-meta-item { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .cover-meta-item .label { color: rgba(255,255,255,0.35); display: block; margin-bottom: 2px; }
+  .cover-meta-item .value { color: rgba(255,255,255,0.85); }
+
+  .toc {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+    padding: 1.5rem 2.5rem;
+    display: flex;
+    gap: 0.5rem 2rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .toc-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-faint); margin-right: 0.5rem; }
+  .toc a { font-family: var(--mono); font-size: 11px; color: var(--green); text-decoration: none; letter-spacing: 0.05em; }
+  .toc a:hover { text-decoration: underline; }
+
+  .section { padding: 2.5rem 2.5rem 0; }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .section-num { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.1em; }
+  h2 { font-size: 1.2rem; font-weight: bold; color: var(--ink); }
+
+  h3 {
+    font-size: 11px;
+    font-weight: bold;
+    color: var(--ink);
+    margin: 1.75rem 0 0.5rem;
+    font-family: var(--mono);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  p { color: var(--ink-mid); margin-bottom: 0.9rem; }
+  .divider { height: 1px; background: var(--border-light); margin: 2.5rem 2.5rem 0; }
+
+  .purpose-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 1.25rem;
+  }
+
+  .purpose-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem 1.25rem; }
+  .purpose-card .audience { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--green); margin-bottom: 0.4rem; }
+  .purpose-card p { font-size: 0.85rem; color: var(--ink-mid); margin: 0; line-height: 1.55; }
+
+  .record-id-block {
+    background: var(--ink);
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 1.5rem 2rem;
+    margin-top: 1.25rem;
+    font-family: var(--mono);
+  }
+
+  .record-id-example { font-size: 2rem; color: var(--green-bright); letter-spacing: 0.1em; margin-bottom: 0.75rem; }
+
+  .record-id-breakdown { display: flex; gap: 0; margin-bottom: 1rem; }
+  .rid-part { text-align: center; padding: 0.4rem 0.75rem; border: 1px solid rgba(255,255,255,0.1); }
+  .rid-part:first-child { border-radius: 4px 0 0 4px; }
+  .rid-part:last-child { border-radius: 0 4px 4px 0; }
+  .rid-part .chars { font-size: 1.1rem; color: var(--green-bright); display: block; }
+  .rid-part .desc { font-size: 9px; color: rgba(255,255,255,0.4); letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-top: 3px; }
+  .record-id-block p { color: rgba(255,255,255,0.5); font-size: 11px; margin: 0; }
+
+  .field-group { margin-top: 1.5rem; }
+
+  .field-group-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  .field-group-title.gov { color: var(--blue); border-color: var(--blue); }
+  .field-group-title.new { color: var(--green); }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 200px 90px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border-light);
+    padding: 0.85rem 0;
+    align-items: start;
+  }
+
+  .field-row:last-child { border-bottom: none; }
+  .field-row.new-field { background: linear-gradient(90deg, rgba(26,122,74,0.04) 0%, transparent 100%); }
+
+  .field-name { font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: bold; padding-right: 1rem; }
+  .field-type { font-family: var(--mono); font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.08em; padding-top: 2px; }
+  .field-desc { font-size: 0.85rem; color: var(--ink-mid); line-height: 1.55; }
+
+  .field-desc .req {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-right: 5px;
+    vertical-align: middle;
+  }
+
+  .req.required { background: var(--red-light); color: var(--red); border: 1px solid #f0b8b8; }
+  .req.conditional { background: var(--amber-light); color: var(--amber); border: 1px solid #f0c898; }
+  .req.optional { background: var(--blue-light); color: var(--blue); border: 1px solid #b8c8f0; }
+  .req.auto { background: var(--purple-light); color: var(--purple); border: 1px solid #c8b8f0; }
+
+  .field-example { font-family: var(--mono); font-size: 11px; color: var(--green); margin-top: 3px; display: block; }
+  .field-note { font-size: 0.8rem; color: var(--ink-faint); font-style: italic; margin-top: 3px; display: block; }
+  .field-new-badge { display: inline-block; font-family: var(--mono); font-size: 9px; background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); padding: 1px 5px; border-radius: 3px; margin-left: 6px; vertical-align: middle; letter-spacing: 0.05em; }
+
+  .threshold-table { width: 100%; border-collapse: collapse; margin-top: 1.25rem; font-size: 0.85rem; }
+  .threshold-table th { text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); padding: 8px 12px; border-bottom: 2px solid var(--border); background: var(--bg); }
+  .threshold-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-light); vertical-align: top; color: var(--ink-mid); line-height: 1.5; }
+  .threshold-table td:first-child { font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: bold; }
+
+  .grade { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 4px; letter-spacing: 0.05em; }
+  .grade-a { background: #d4f0e0; color: #0a5a28; }
+  .grade-b { background: #ddf0d4; color: #2a5a0a; }
+  .grade-c { background: var(--amber-light); color: var(--amber); }
+  .grade-d { background: #fde8d0; color: #8a3a00; }
+  .grade-f { background: var(--red-light); color: var(--red); }
+
+  .json-block { background: #0f0f0d; border-radius: var(--radius); padding: 1.5rem; margin-top: 1.25rem; overflow-x: auto; }
+  .json-block pre { font-family: var(--mono); font-size: 12px; line-height: 1.7; color: #c8c8c0; margin: 0; }
+  .json-key { color: #7ec8a0; }
+  .json-str { color: #f0c080; }
+  .json-num { color: #80c0f0; }
+  .json-bool { color: #f080a0; }
+  .json-null { color: #888880; }
+  .json-comment { color: #555550; font-style: italic; }
+  .json-new { color: #c0f080; }
+
+  .callout { border-radius: var(--radius); padding: 1rem 1.25rem; margin: 1.25rem 0 0; font-size: 0.88rem; line-height: 1.6; }
+  .callout.info { background: var(--green-light); border-left: 3px solid var(--green); color: #0a3a1e; }
+  .callout.warn { background: var(--amber-light); border-left: 3px solid var(--amber); color: #5a2a00; }
+  .callout.gov { background: var(--blue-light); border-left: 3px solid var(--blue); color: #0a1e3a; }
+  .callout strong { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+
+  .vehicles-table { width: 100%; border-collapse: collapse; margin-top: 1.25rem; font-size: 0.85rem; }
+  .vehicles-table th { text-align: left; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faint); padding: 8px 12px; border-bottom: 2px solid var(--border); background: var(--bg); }
+  .vehicles-table td { padding: 9px 12px; border-bottom: 1px solid var(--border-light); vertical-align: middle; font-size: 0.83rem; color: var(--ink-mid); }
+  .vehicles-table td:first-child { font-weight: bold; color: var(--ink); }
+
+  .phase-badge { display: inline-block; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; }
+  .phase-1 { background: var(--green-light); color: var(--green); border: 1px solid var(--green-mid); }
+  .phase-2 { background: var(--blue-light); color: var(--blue); border: 1px solid #b8c8f0; }
+  .phase-3 { background: var(--bg); color: var(--ink-faint); border: 1px solid var(--border); }
+
+  .changelog { margin-top: 1.25rem; }
+  .changelog-entry { display: grid; grid-template-columns: 80px 90px 1fr; gap: 0; border-bottom: 1px solid var(--border-light); padding: 0.75rem 0; font-size: 0.85rem; }
+  .changelog-entry:last-child { border-bottom: none; }
+  .changelog-version { font-family: var(--mono); font-size: 12px; color: var(--ink); font-weight: bold; }
+  .changelog-date { font-size: 0.8rem; color: var(--ink-faint); }
+  .changelog-desc { color: var(--ink-mid); }
+
+  .api-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 1.25rem; }
+  .api-card { background: var(--bg-card); border: 1px solid var(--border); border-left: 3px solid var(--blue); border-radius: var(--radius); padding: 1rem 1.25rem; }
+  .api-card .api-name { font-family: var(--mono); font-size: 11px; font-weight: bold; color: var(--blue); margin-bottom: 0.4rem; letter-spacing: 0.05em; }
+  .api-card .api-provider { font-size: 10px; color: var(--ink-faint); font-family: var(--mono); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+  .api-card p { font-size: 0.82rem; color: var(--ink-mid); margin: 0; line-height: 1.5; }
+
+  /* ── Shared site footer ── */
+  .site-footer {
+    background: var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 3rem;
+  }
+
+  .site-footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+
+  .site-footer a { color: var(--green-bright); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .site-header { padding: 0 1.25rem; }
+    .site-nav { display: none; }
+    .section { padding: 2rem 1.25rem 0; }
+    .cover { padding: 2rem 1.25rem 1.5rem; }
+    .toc { padding: 1rem 1.25rem; }
+    .field-row { grid-template-columns: 1fr; gap: 2px; }
+    .cover h1 { font-size: 1.6rem; }
+    .divider { margin: 2rem 1.25rem 0; }
+    .site-footer { padding: 1.25rem; }
+    .api-grid { grid-template-columns: 1fr; }
+    .cover-meta { gap: 1rem; }
+    .changelog-entry { grid-template-columns: 70px 80px 1fr; font-size: 0.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Shared site header ── -->
+<header class="site-header">
+  <a href="index.html" class="site-logo">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Lookup</a>
+    <a href="index.html">Browse database</a>
+    <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a>
+    <a href="about.html">About</a>
+    <a href="bs-data-standard-v1.1.html" class="active">Data standard</a>
+  </nav>
+</header>
+
+<div class="doc-wrap">
+<header class="cover">
+  <div class="cover-label">Battery Survey — Open Data Standard</div>
+  <h1>The BS Record Format<br>Version 1.1</h1>
+  <p style="color:rgba(255,255,255,0.5); font-size:0.9rem; max-width:560px; margin-top:0.5rem;">Complete snapshot of every data field accessible from the vehicle's Battery Management System via approved diagnostic tools, plus automatically enriched GOV.UK vehicle and MOT data. This is the technical foundation of the Battery Survey database.</p>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><span class="label">Version</span><span class="value">1.1</span></div>
+    <div class="cover-meta-item"><span class="label">Status</span><span class="value">Draft for review</span></div>
+    <div class="cover-meta-item"><span class="label">Published</span><span class="value">May 2026</span></div>
+    <div class="cover-meta-item"><span class="label">Supersedes</span><span class="value">v1.0 May 2026</span></div>
+    <div class="cover-meta-item"><span class="label">Submissions</span><span class="value">Harvesters only</span></div>
+    <div class="cover-meta-item"><span class="label">Licence</span><span class="value">Open — CC BY 4.0</span></div>
+  </div>
+</header>
+
+<nav class="toc">
+  <span class="toc-label">Contents</span>
+  <a href="#purpose">1. Purpose</a>
+  <a href="#record-id">2. Record ID</a>
+  <a href="#fields">3. Fields</a>
+  <a href="#gov">4. GOV data</a>
+  <a href="#thresholds">5. Thresholds</a>
+  <a href="#vehicles">6. Vehicles</a>
+  <a href="#json">7. JSON</a>
+  <a href="#integrity">8. Integrity</a>
+  <a href="#changelog">9. Changelog</a>
+</nav>
+
+
+<!-- 1. Purpose -->
+<section class="section" id="purpose">
+  <div class="section-header"><span class="section-num">01</span><h2>Purpose and scope</h2></div>
+  <p>A Battery Survey record is a standardised, timestamped snapshot of an electric vehicle battery's condition, collected by a verified harvester using approved open-source diagnostic tools. It is the most complete publicly available record of an individual EV battery's condition in the UK — capturing every data field the vehicle's own BMS exposes, automatically enriched with GOV.UK vehicle and MOT history data at the moment of submission.</p>
+  <p>The standard is intentionally exhaustive at the data collection layer and deliberately minimal at the interpretation layer. It captures everything the hardware can read. It does not invent scores, apply weightings, or generate proprietary ratings. The raw data is the product.</p>
+  <div class="purpose-grid">
+    <div class="purpose-card"><div class="audience">Individual buyers</div><p>Full BMS snapshot including charge history — data no visual inspection or mileage check can reveal. Automatically cross-referenced against MOT history.</p></div>
+    <div class="purpose-card"><div class="audience">Insurers</div><p>Periodic standardised records including rapid charge counts, cell balance, and temperature history — enabling genuine risk-based battery pricing.</p></div>
+    <div class="purpose-card"><div class="audience">Community fleets</div><p>Longitudinal record of fleet battery health over time, with GOV.UK MOT data integrated, for trustee and funder reporting.</p></div>
+    <div class="purpose-card"><div class="audience">Researchers</div><p>Open, queryable dataset including fields no other public dataset captures — charge cycle counts, BMS reprogramming history, multi-sensor temperatures.</p></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 2. Record ID -->
+<section class="section" id="record-id">
+  <div class="section-header"><span class="section-num">02</span><h2>Record identifier</h2></div>
+  <p>Every Battery Survey record is assigned a unique, permanent, human-readable identifier at submission. This identifier appears on the certificate, in the database, and in all API responses.</p>
+  <div class="record-id-block">
+    <div class="record-id-example">BS-2026-00001</div>
+    <div class="record-id-breakdown">
+      <div class="rid-part"><span class="chars">BS</span><span class="desc">Prefix</span></div>
+      <div class="rid-part"><span class="chars">2026</span><span class="desc">Year</span></div>
+      <div class="rid-part"><span class="chars">00001</span><span class="desc">Sequential</span></div>
+    </div>
+    <p>Sequence resets each calendar year. Records are never deleted or renumbered. A withdrawn record retains its ID and is marked VOID with a reason.</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 3. Fields -->
+<section class="section" id="fields">
+  <div class="section-header"><span class="section-num">03</span><h2>Field definitions</h2></div>
+
+  <p>Fields are grouped into six harvester-submitted groups plus one automatically enriched GOV data group. <span style="font-family:var(--mono);font-size:11px;background:var(--green-light);color:var(--green);padding:1px 6px;border-radius:3px;border:1px solid var(--green-mid);">new v1.1</span> marks fields added in this version.</p>
+
+  <p style="font-size:0.85rem;">
+    <span class="req required">Required</span> must be present for acceptance &nbsp;
+    <span class="req conditional">Conditional</span> required when condition is met &nbsp;
+    <span class="req optional">Optional</span> improves data quality &nbsp;
+    <span class="req auto">Auto</span> fetched automatically on submission
+  </p>
+
+  <!-- Group A: Record identity -->
+  <div class="field-group">
+    <div class="field-group-title">A — Record identity</div>
+    <div class="field-row">
+      <div class="field-name">record_id</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Assigned by system on submission. Format: BS-YYYY-NNNNN.<span class="field-example">e.g. BS-2026-00001</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">test_date</div><div class="field-type">Date</div>
+      <div class="field-desc"><span class="req required">Required</span> Date the test was physically conducted. ISO 8601.<span class="field-example">e.g. 2026-05-25</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">test_time_utc</div><div class="field-type">Time</div>
+      <div class="field-desc"><span class="req required">Required</span> Time of test in UTC. Derived from screen recording metadata.<span class="field-example">e.g. 11:42:00Z</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">harvester_id</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> Anonymised harvester identifier. Format: HV-NNNNN. Identity held separately, never published.<span class="field-example">e.g. HV-00001</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">evidence_url</div><div class="field-type">URL</div>
+      <div class="field-desc"><span class="req required">Required</span> Permanent URL to screen recording. Must be accessible for audit. Not published publicly without owner consent.<span class="field-example">e.g. https://drive.google.com/...</span></div>
+    </div>
+  </div>
+
+  <!-- Group B: Vehicle identity -->
+  <div class="field-group">
+    <div class="field-group-title">B — Vehicle identity</div>
+    <div class="field-row">
+      <div class="field-name">registration</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> UK registration number. Uppercase, no spaces.<span class="field-example">e.g. BK17ABC</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">vin <span class="field-new-badge">new</span></div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> Vehicle Identification Number as read directly from the BMS by the diagnostic app. Cross-checks seller-stated identity. 17 characters.<span class="field-example">e.g. VF1AG000X12345678</span><span class="field-note">Not manually entered — read from ECU Versions screen in diagnostic app. Discrepancy with V5C is a flag.</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">make</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> Vehicle manufacturer from approved list.<span class="field-example">e.g. Renault / Nissan</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">model</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> Vehicle model from approved list.<span class="field-example">e.g. Kangoo ZE 33 / Leaf 40kWh</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">year</div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req required">Required</span> Model year as registered.<span class="field-example">e.g. 2017</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">battery_kwh</div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Nominal battery capacity as manufactured in kWh.<span class="field-example">e.g. 33.0 / 40.0 / 22.0</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">odometer_km</div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req required">Required</span> Odometer reading in km at time of test. Stated verbally on recording.<span class="field-example">e.g. 21547</span><span class="field-note">Convert miles × 1.609. Cross-referenced against MOT mileage history automatically.</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">ownership_type</div><div class="field-type">Enum</div>
+      <div class="field-desc"><span class="req required">Required</span><span class="field-example">private_owner / dealer_stock / community_fleet / leasing_return / unknown</span></div>
+    </div>
+  </div>
+
+  <!-- Group C: Battery measurements -->
+  <div class="field-group">
+    <div class="field-group-title">C — Battery measurements</div>
+
+    <div class="field-row">
+      <div class="field-name">soh_percent</div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> State of Health as reported by BMS, percentage of original capacity.<span class="field-example">e.g. 84.3</span><span class="field-note">Range 0.0–100.0. One decimal place.</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">soh_method <span class="field-new-badge">new</span></div><div class="field-type">Enum</div>
+      <div class="field-desc"><span class="req required">Required</span> Which SOH calculation the value represents. Renault ZE exposes two; Leaf exposes one.<span class="field-example">energy_avg / available_power / single</span><span class="field-note">Renault: energy_avg (Zxx_sohe_avg) is preferred. Record both if visible.</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">soh_secondary <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> Second SOH value if vehicle exposes both methods. Renault ZE only.<span class="field-example">e.g. 81.7</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">ahr_capacity <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Battery amp-hour capacity as read from BMS. Decreases with age. More direct than SOH on Leaf variants where SOH can show artefacts.<span class="field-example">e.g. 54.3</span><span class="field-note">Leaf only at Phase 1. CanZE equivalent field to be confirmed for Renault in Phase 2.</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">hx_percent <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> Hx value — proxy for internal resistance and power delivery capability. Leaf only. Combined with SOH gives fuller picture of battery stress history.<span class="field-example">e.g. 78.4</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">gids <span class="field-new-badge">new</span></div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> GIDs value at time of test. Leaf-specific unit representing usable energy. Cross-checks AHr. New 24kWh Leaf ≈ 281 GIDs.<span class="field-example">e.g. 224</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">cell_delta_mv</div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req required">Required</span> Max-Min cell voltage delta in millivolts. Lower is healthier.<span class="field-example">e.g. 18</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">cell_voltage_min</div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Lowest individual cell voltage in volts.<span class="field-example">e.g. 3.721</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">cell_voltage_max</div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Highest individual cell voltage in volts.<span class="field-example">e.g. 3.739</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">cell_voltage_avg <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Average cell voltage across all cells.<span class="field-example">e.g. 3.731</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">weak_cell_position</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> Required if any cell reads more than 50mV below the next lowest. Grid position as shown in app.<span class="field-example">e.g. R3-C4</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">pack_voltage <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Total battery pack voltage in volts as read from BMS.<span class="field-example">e.g. 358.2</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">soc_at_test</div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req required">Required</span> State of Charge at time of test — how full the battery was as a percentage.<span class="field-example">e.g. 67</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">battery_temp_min <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Lowest battery temperature reading in °C across all sensors at time of test. Affects cell voltage behaviour and SOH accuracy.<span class="field-example">e.g. 16.5</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">battery_temp_max <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req required">Required</span> Highest battery temperature reading in °C across all sensors.<span class="field-example">e.g. 19.0</span><span class="field-note">Large spread between min and max may indicate thermal management issue.</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">battery_temp_sensors <span class="field-new-badge">new</span></div><div class="field-type">Array</div>
+      <div class="field-desc"><span class="req optional">Optional</span> Individual temperature reading from each sensor. 4 sensors on 2011–12 Leaf, 3 on 2013+ Leaf, variable on Renault.<span class="field-example">e.g. [16.5, 17.0, 18.5, 19.0]</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">ambient_temp_c</div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req optional">Optional</span> Ambient air temperature in °C. Read from dashboard or app if available, otherwise harvester estimate.<span class="field-example">e.g. 14</span></div>
+    </div>
+  </div>
+
+  <!-- Group D: Charge history -->
+  <div class="field-group">
+    <div class="field-group-title new">D — Charge history &nbsp;<span class="field-new-badge">new group v1.1</span></div>
+
+    <div class="callout info" style="margin-bottom:1rem;">
+      <strong>Why charge history matters</strong>
+      The number of rapid DC charges is invisible to any visual inspection, any mileage check, and any competing certificate product. A Leaf with 800 rapid charges tells a fundamentally different story to one with 80 rapid charges at the same mileage. This data is read directly from the BMS and cannot be reset or manipulated by the seller.
+    </div>
+
+    <div class="field-row new-field">
+      <div class="field-name">rapid_charge_count <span class="field-new-badge">new</span></div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req required">Required</span> Total number of DC rapid charge events recorded by BMS since manufacture. Cannot be reset.<span class="field-example">e.g. 247</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">slow_charge_count <span class="field-new-badge">new</span></div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req required">Required</span> Total number of AC Level 1/Level 2 charge events recorded by BMS.<span class="field-example">e.g. 1842</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">rapid_charge_ratio <span class="field-new-badge">new</span></div><div class="field-type">Decimal</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Calculated on submission. Rapid charges as a percentage of total charge events. High ratios on older passive-cooled vehicles correlate with faster degradation.<span class="field-example">e.g. 11.8</span></div>
+    </div>
+  </div>
+
+  <!-- Group E: BMS history -->
+  <div class="field-group">
+    <div class="field-group-title new">E — BMS history &nbsp;<span class="field-new-badge">new group v1.1</span></div>
+
+    <div class="callout warn" style="margin-bottom:1rem;">
+      <strong>BMS manipulation detection</strong>
+      Renault vehicles are known to show inflated SOH figures after dealer software updates. The BMS reprogramming count and date fields allow Battery Survey to flag records where a recent BMS update may have affected the reported SOH. This is the only publicly documented method of detecting this issue at point of test.
+    </div>
+
+    <div class="field-row new-field">
+      <div class="field-name">bms_reprogram_count <span class="field-new-badge">new</span></div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> Number of BMS reprogramming events recorded. Renault ZE via CanZE. Read from ECU programming history.<span class="field-example">e.g. 2</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">bms_reprogram_last_date <span class="field-new-badge">new</span></div><div class="field-type">Date</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> Date of most recent BMS reprogramming. Required if bms_reprogram_count is greater than zero.<span class="field-example">e.g. 2025-11-04</span><span class="field-note">A reprogramming within 90 days of test auto-applies the bms_update_suspected flag.</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">warranty_status <span class="field-new-badge">new</span></div><div class="field-type">Enum</div>
+      <div class="field-desc"><span class="req required">Required</span> OEM battery warranty status as read from BMS where available.<span class="field-example">active / expired / unknown</span></div>
+    </div>
+    <div class="field-row new-field">
+      <div class="field-name">warranty_remaining_km <span class="field-new-badge">new</span></div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req conditional">Conditional</span> Remaining kilometres on OEM battery warranty. Required if warranty_status is active.<span class="field-example">e.g. 42300</span></div>
+    </div>
+  </div>
+
+  <!-- Group F: Diagnostic tool -->
+  <div class="field-group">
+    <div class="field-group-title">F — Diagnostic tool</div>
+    <div class="field-row">
+      <div class="field-name">app_name</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> Diagnostic app used. Must match approved list.<span class="field-example">e.g. CanZE / LeafSpy Pro / KangooZE</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">app_version</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> App version number.<span class="field-example">e.g. 3.5.2</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">dongle_model</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req required">Required</span> OBD2 dongle model. Must match approved list.<span class="field-example">e.g. Konnwei KW902</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">connection_status</div><div class="field-type">Enum</div>
+      <div class="field-desc"><span class="req required">Required</span><span class="field-example">connected / failed / partial</span><span class="field-note">A failed connection is still a valid submission.</span></div>
+    </div>
+  </div>
+
+  <!-- Group G: Context -->
+  <div class="field-group">
+    <div class="field-group-title">G — Context and flags</div>
+    <div class="field-row">
+      <div class="field-name">purpose</div><div class="field-type">Enum</div>
+      <div class="field-desc"><span class="req required">Required</span><span class="field-example">pre_purchase / periodic_fleet / six_monthly / research / other</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">harvester_notes</div><div class="field-type">Text</div>
+      <div class="field-desc"><span class="req optional">Optional</span> Free text observations. Max 500 characters.<span class="field-example">e.g. "Seller mentioned recent Renault dealer BMS update. SOH appears high for age."</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">flags</div><div class="field-type">Array</div>
+      <div class="field-desc"><span class="req optional">Optional</span> Structured flags. Some auto-applied by validation rules.<span class="field-example">["bms_update_suspected", "weak_cell_present", "high_rapid_charge_ratio", "vin_mismatch", "odometer_anomaly"]</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">record_status</div><div class="field-type">Enum</div>
+      <div class="field-desc"><span class="req required">Required</span><span class="field-example">active / under_review / void</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 4. GOV data -->
+<section class="section" id="gov">
+  <div class="section-header"><span class="section-num">04</span><h2>GOV.UK enrichment data</h2></div>
+
+  <p>On submission, Battery Survey automatically queries two GOV.UK APIs using the vehicle registration number. The returned data is stored as a separate sub-object within the record. The harvester does nothing — this enrichment is entirely automatic. Both APIs are free, open government licence, and JSON-native.</p>
+
+  <div class="api-grid">
+    <div class="api-card">
+      <div class="api-name">Vehicle Enquiry Service</div>
+      <div class="api-provider">DVLA · driver-vehicle-licensing.api.gov.uk</div>
+      <p>Returns make, model, colour, fuel type, month of first registration, current MOT status, tax status, CO2 emissions, and revenue weight. Confirms vehicle identity independently of the seller.</p>
+    </div>
+    <div class="api-card">
+      <div class="api-name">MOT History API</div>
+      <div class="api-provider">DVSA · history.mot.api.gov.uk</div>
+      <p>Returns full MOT history including test dates, pass/fail results, mileage at each test, reasons for failure, and advisory notices. Covers all GB vehicles since 2005.</p>
+    </div>
+  </div>
+
+  <div class="callout gov">
+    <strong>Odometer cross-check</strong>
+    The mileage recorded at each MOT is compared against the odometer reading submitted by the harvester. A discrepancy — for example, an odometer reading lower than the most recent MOT mileage — auto-applies the odometer_anomaly flag. This is a tamper detection mechanism that no competing product offers.
+  </div>
+
+  <div class="field-group">
+    <div class="field-group-title gov">H — GOV.UK vehicle data (auto-fetched)</div>
+
+    <div class="field-row">
+      <div class="field-name">gov_make</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Manufacturer as registered with DVLA.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_colour</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Registered colour. Discrepancy with observed colour is flagged.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_first_registered</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Month and year of first registration.<span class="field-example">e.g. 2017-09</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_mot_status</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Current MOT status at time of submission.<span class="field-example">e.g. Valid / No details held</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_tax_status</div><div class="field-type">String</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Current road tax status.<span class="field-example">e.g. Taxed / SORN</span></div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_mot_history</div><div class="field-type">Array</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Full MOT history array. Each entry contains test date, result, mileage, and any advisories or failures.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_mot_last_mileage_km</div><div class="field-type">Integer</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Mileage recorded at most recent MOT, converted to km. Used for odometer cross-check.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_mot_advisories_last</div><div class="field-type">Array</div>
+      <div class="field-desc"><span class="req auto">Auto</span> Advisory notices from most recent MOT. Published in full on the record page.</div>
+    </div>
+    <div class="field-row">
+      <div class="field-name">gov_fetched_at</div><div class="field-type">Timestamp</div>
+      <div class="field-desc"><span class="req auto">Auto</span> UTC timestamp of GOV.UK API query. Both APIs return live data — this records the moment it was captured.</div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 5. Thresholds -->
+<section class="section" id="thresholds">
+  <div class="section-header"><span class="section-num">05</span><h2>Battery grade thresholds</h2></div>
+  <p>A five-grade scale applied automatically on submission. The grade is a convenience label — raw data is always published alongside it. Grades cannot be manually overridden.</p>
+
+  <div class="callout warn">
+    <strong>Important</strong>
+    The grade reflects condition at time of test only. It is not a prediction of future performance, a warranty, or a safety certification. Always read the full record, not just the grade.
+  </div>
+
+  <table class="threshold-table">
+    <thead><tr><th>Grade</th><th>Label</th><th>SOH %</th><th>Cell delta</th><th>What it means</th></tr></thead>
+    <tbody>
+      <tr><td><span class="grade grade-a">A</span></td><td>Excellent</td><td>90%+</td><td>Under 30 mV</td><td>Outstanding condition. Cells well balanced. Performs close to manufacturer specification.</td></tr>
+      <tr><td><span class="grade grade-b">B</span></td><td>Good</td><td>80–89%</td><td>Under 50 mV</td><td>Normal age-related degradation. Performing well. Suitable for most use cases.</td></tr>
+      <tr><td><span class="grade grade-c">C</span></td><td>Fair</td><td>70–79%</td><td>Under 80 mV</td><td>Moderate degradation. Functional but range noticeably reduced. Price should reflect condition.</td></tr>
+      <tr><td><span class="grade grade-d">D</span></td><td>Poor</td><td>60–69%</td><td>Under 120 mV</td><td>Significant degradation. Suitable only for short-range, low-demand use.</td></tr>
+      <tr><td><span class="grade grade-f">F</span></td><td>Fail</td><td>Below 60%</td><td>120 mV+</td><td>Severely degraded or faulty cell. Specialist assessment recommended before purchase or continued fleet use.</td></tr>
+      <tr><td><span class="grade" style="background:#f0f0e8;color:#555;">?</span></td><td>Ungraded</td><td>N/A</td><td>N/A</td><td>Connection failed or data incomplete. Record retained. Retest recommended.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout info">
+    <strong>Delta override rule</strong>
+    If cell delta exceeds the threshold for a given SOH grade, the grade is lowered by one level. For example SOH of 85% is normally Grade B, but a delta of 75mV lowers it to Grade C. Always transparent in the published record.
+  </div>
+
+  <div class="callout warn">
+    <strong>High rapid charge ratio flag</strong>
+    If rapid_charge_ratio exceeds 25% on a passive-cooled vehicle (Nissan Leaf 24kWh or 30kWh), the flag high_rapid_charge_ratio is auto-applied regardless of grade. This does not change the grade but is prominently displayed on the record page.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 6. Vehicles -->
+<section class="section" id="vehicles">
+  <div class="section-header"><span class="section-num">06</span><h2>Supported vehicles v1.1</h2></div>
+  <table class="vehicles-table">
+    <thead><tr><th>Make / Model</th><th>Years</th><th>Battery</th><th>App</th><th>Phase</th></tr></thead>
+    <tbody>
+      <tr><td>Nissan Leaf (Mk1 / Mk2)</td><td>2011–2022</td><td>24 / 30 / 40 / 62 kWh</td><td>LeafSpy Pro</td><td><span class="phase-badge phase-1">Phase 1</span></td></tr>
+      <tr><td>Renault Zoe ZE40</td><td>2016–2019</td><td>41 kWh</td><td>CanZE</td><td><span class="phase-badge phase-2">Phase 2</span></td></tr>
+      <tr><td>Renault Kangoo ZE 22</td><td>2011–2017</td><td>22 kWh</td><td>CanZE / KangooZE</td><td><span class="phase-badge phase-2">Phase 2</span></td></tr>
+      <tr><td>Renault Kangoo ZE 33</td><td>2017–2021</td><td>33 kWh</td><td>CanZE / KangooZE</td><td><span class="phase-badge phase-2">Phase 2</span></td></tr>
+      <tr><td>Renault Zoe ZE50</td><td>2019–2024</td><td>52 kWh</td><td>CanZE</td><td><span class="phase-badge phase-2">Phase 2</span> <span style="font-size:10px;color:var(--amber)">⚠ BMS caveat</span></td></tr>
+      <tr><td>VW ID.3 / ID.4</td><td>2020–2023</td><td>52 / 77 kWh</td><td>OBDEleven / Car Scanner</td><td><span class="phase-badge phase-3">Phase 3</span></td></tr>
+      <tr><td>Tesla Model 3 / Y</td><td>2019–2023</td><td>SR / LR / P</td><td>Scan My Tesla</td><td><span class="phase-badge phase-3">Phase 3</span></td></tr>
+    </tbody>
+  </table>
+</section>
+
+<div class="divider"></div>
+
+<!-- 7. JSON -->
+<section class="section" id="json">
+  <div class="section-header"><span class="section-num">07</span><h2>JSON record format — complete example</h2></div>
+  <p>Canonical format for storage and API responses. New v1.1 fields shown in <span style="color:#c0f080;font-family:var(--mono);font-size:12px;">green</span>.</p>
+
+  <div class="json-block"><pre>{
+  <span class="json-comment">// ── A: Record identity ───────────────────────</span>
+  <span class="json-key">"record_id"</span>:             <span class="json-str">"BS-2026-00001"</span>,
+  <span class="json-key">"test_date"</span>:             <span class="json-str">"2026-05-25"</span>,
+  <span class="json-key">"test_time_utc"</span>:         <span class="json-str">"11:42:00Z"</span>,
+  <span class="json-key">"harvester_id"</span>:          <span class="json-str">"HV-00001"</span>,
+  <span class="json-key">"evidence_url"</span>:          <span class="json-str">"https://storage.batterysurvey.info/BS-2026-00001"</span>,
+
+  <span class="json-comment">// ── B: Vehicle identity ──────────────────────</span>
+  <span class="json-key">"registration"</span>:          <span class="json-str">"BK17ABC"</span>,
+  <span class="json-new">"vin"</span>:                   <span class="json-str">"VF1AG000X12345678"</span>,
+  <span class="json-key">"make"</span>:                  <span class="json-str">"Renault"</span>,
+  <span class="json-key">"model"</span>:                 <span class="json-str">"Kangoo ZE 33"</span>,
+  <span class="json-key">"year"</span>:                  <span class="json-num">2017</span>,
+  <span class="json-key">"battery_kwh"</span>:           <span class="json-num">33.0</span>,
+  <span class="json-key">"odometer_km"</span>:           <span class="json-num">21547</span>,
+  <span class="json-key">"ownership_type"</span>:        <span class="json-str">"private_owner"</span>,
+
+  <span class="json-comment">// ── C: Battery measurements ──────────────────</span>
+  <span class="json-key">"soh_percent"</span>:           <span class="json-num">84.3</span>,
+  <span class="json-new">"soh_method"</span>:            <span class="json-str">"energy_avg"</span>,
+  <span class="json-new">"soh_secondary"</span>:         <span class="json-num">81.7</span>,
+  <span class="json-new">"ahr_capacity"</span>:          <span class="json-null">null</span>,
+  <span class="json-comment">// (ahr_capacity Renault field TBC in Phase 2)</span>
+  <span class="json-new">"hx_percent"</span>:            <span class="json-null">null</span>,
+  <span class="json-comment">// (hx_percent Leaf only)</span>
+  <span class="json-new">"gids"</span>:                  <span class="json-null">null</span>,
+  <span class="json-comment">// (gids Leaf only)</span>
+  <span class="json-key">"cell_delta_mv"</span>:         <span class="json-num">18</span>,
+  <span class="json-key">"cell_voltage_min"</span>:      <span class="json-num">3.721</span>,
+  <span class="json-key">"cell_voltage_max"</span>:      <span class="json-num">3.739</span>,
+  <span class="json-new">"cell_voltage_avg"</span>:      <span class="json-num">3.731</span>,
+  <span class="json-key">"weak_cell_position"</span>:   <span class="json-null">null</span>,
+  <span class="json-new">"pack_voltage"</span>:          <span class="json-num">358.2</span>,
+  <span class="json-key">"soc_at_test"</span>:           <span class="json-num">67</span>,
+  <span class="json-new">"battery_temp_min"</span>:      <span class="json-num">16.5</span>,
+  <span class="json-new">"battery_temp_max"</span>:      <span class="json-num">19.0</span>,
+  <span class="json-new">"battery_temp_sensors"</span>:  [<span class="json-num">16.5</span>, <span class="json-num">17.5</span>, <span class="json-num">18.0</span>, <span class="json-num">19.0</span>],
+  <span class="json-key">"ambient_temp_c"</span>:        <span class="json-num">14</span>,
+
+  <span class="json-comment">// ── D: Charge history ────────────────────────</span>
+  <span class="json-new">"rapid_charge_count"</span>:    <span class="json-num">47</span>,
+  <span class="json-new">"slow_charge_count"</span>:     <span class="json-num">612</span>,
+  <span class="json-new">"rapid_charge_ratio"</span>:    <span class="json-num">7.1</span>,
+
+  <span class="json-comment">// ── E: BMS history ───────────────────────────</span>
+  <span class="json-new">"bms_reprogram_count"</span>:   <span class="json-num">1</span>,
+  <span class="json-new">"bms_reprogram_last_date"</span>: <span class="json-str">"2025-03-12"</span>,
+  <span class="json-new">"warranty_status"</span>:       <span class="json-str">"expired"</span>,
+  <span class="json-new">"warranty_remaining_km"</span>: <span class="json-null">null</span>,
+
+  <span class="json-comment">// ── F: Diagnostic tool ───────────────────────</span>
+  <span class="json-key">"app_name"</span>:              <span class="json-str">"CanZE"</span>,
+  <span class="json-key">"app_version"</span>:           <span class="json-str">"3.5.2"</span>,
+  <span class="json-key">"dongle_model"</span>:          <span class="json-str">"Konnwei KW902"</span>,
+  <span class="json-key">"connection_status"</span>:     <span class="json-str">"connected"</span>,
+
+  <span class="json-comment">// ── G: Context ───────────────────────────────</span>
+  <span class="json-key">"purpose"</span>:               <span class="json-str">"pre_purchase"</span>,
+  <span class="json-key">"harvester_notes"</span>:       <span class="json-str">"Clean test. One BMS reprogram on record, March 2025."</span>,
+  <span class="json-key">"flags"</span>:                 [],
+  <span class="json-key">"record_status"</span>:         <span class="json-str">"active"</span>,
+
+  <span class="json-comment">// ── H: GOV.UK enrichment (auto-fetched) ──────</span>
+  <span class="json-new">"gov"</span>: {
+    <span class="json-new">"gov_make"</span>:                 <span class="json-str">"RENAULT"</span>,
+    <span class="json-new">"gov_colour"</span>:               <span class="json-str">"WHITE"</span>,
+    <span class="json-new">"gov_first_registered"</span>:     <span class="json-str">"2017-09"</span>,
+    <span class="json-new">"gov_mot_status"</span>:            <span class="json-str">"Valid"</span>,
+    <span class="json-new">"gov_tax_status"</span>:            <span class="json-str">"Taxed"</span>,
+    <span class="json-new">"gov_mot_last_mileage_km"</span>:   <span class="json-num">19840</span>,
+    <span class="json-new">"gov_mot_advisories_last"</span>:   [<span class="json-str">"Rear brake disc slightly pitted (5.2.2 (b) (i))"</span>],
+    <span class="json-new">"gov_mot_history"</span>:          [...],
+    <span class="json-new">"gov_fetched_at"</span>:           <span class="json-str">"2026-05-25T14:03:18Z"</span>
+  },
+
+  <span class="json-comment">// ── Computed on submission ────────────────────</span>
+  <span class="json-key">"grade"</span>:                 <span class="json-str">"B"</span>,
+  <span class="json-key">"grade_label"</span>:           <span class="json-str">"Good"</span>,
+  <span class="json-key">"standard_version"</span>:      <span class="json-str">"1.1"</span>,
+  <span class="json-key">"submitted_at"</span>:          <span class="json-str">"2026-05-25T14:03:22Z"</span>
+}</pre></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 8. Integrity -->
+<section class="section" id="integrity">
+  <div class="section-header"><span class="section-num">08</span><h2>Data integrity rules</h2></div>
+
+  <div class="field-group">
+    <div class="field-group-title">Validation rules</div>
+    <div class="field-row"><div class="field-name">Registration</div><div class="field-type">Format</div><div class="field-desc">Must match UK plate format.</div></div>
+    <div class="field-row"><div class="field-name">VIN</div><div class="field-type">Format</div><div class="field-desc">17 characters, ISO 3779. Must match DVLA-returned VIN where available. Mismatch auto-applies vin_mismatch flag.</div></div>
+    <div class="field-row"><div class="field-name">SOH range</div><div class="field-type">Range</div><div class="field-desc">0.0–100.0. Values above 100.0 held for review — likely BMS fault or dongle incompatibility.</div></div>
+    <div class="field-row"><div class="field-name">Cell delta</div><div class="field-type">Range</div><div class="field-desc">Positive integer. Above 500mV flagged for review.</div></div>
+    <div class="field-row"><div class="field-name">Cell voltages</div><div class="field-type">Range</div><div class="field-desc">2.500–4.300V. Min ≤ max. Delta between min and max must equal cell_delta_mv ±5mV.</div></div>
+    <div class="field-row"><div class="field-name">Odometer check</div><div class="field-type">Logic</div><div class="field-desc">Compared against gov_mot_last_mileage_km. If odometer_km is lower than last MOT mileage, odometer_anomaly flag auto-applied.</div></div>
+    <div class="field-row"><div class="field-name">BMS reprogram</div><div class="field-type">Logic</div><div class="field-desc">If bms_reprogram_last_date is within 90 days of test_date, bms_update_suspected flag auto-applied.</div></div>
+    <div class="field-row"><div class="field-name">Rapid charge ratio</div><div class="field-type">Logic</div><div class="field-desc">If rapid_charge_ratio > 25% on passive-cooled vehicle, high_rapid_charge_ratio flag auto-applied.</div></div>
+    <div class="field-row"><div class="field-name">Evidence URL</div><div class="field-type">Presence</div><div class="field-desc">Must be accessible at submission. Dead links cause rejection.</div></div>
+    <div class="field-row"><div class="field-name">Duplicate check</div><div class="field-type">Logic</div><div class="field-desc">Same registration within 30 days triggers warning but not rejection.</div></div>
+  </div>
+
+  <div class="callout info">
+    <strong>On transparency</strong>
+    Battery Survey publishes the raw data. Records can only be voided if technically invalid — not because the result is inconvenient. No seller, dealer, or fleet operator can request suppression of a valid record.
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- 9. Changelog -->
+<section class="section" id="changelog">
+  <div class="section-header"><span class="section-num">09</span><h2>Version changelog</h2></div>
+
+  <div class="changelog">
+    <div class="changelog-entry">
+      <div class="changelog-version">v1.1</div>
+      <div class="changelog-date">May 2026</div>
+      <div class="changelog-desc">Added VIN field. Added full charge history group (D): rapid_charge_count, slow_charge_count, rapid_charge_ratio. Added BMS history group (E): bms_reprogram_count, bms_reprogram_last_date, warranty_status, warranty_remaining_km. Added GOV.UK enrichment group (H): DVLA VES and DVSA MOT History auto-fetch on submission. Added battery measurement fields: ahr_capacity, hx_percent, gids, soh_method, soh_secondary, cell_voltage_avg, pack_voltage, battery_temp_min, battery_temp_max, battery_temp_sensors. Added odometer_anomaly, vin_mismatch, high_rapid_charge_ratio auto-flags. No breaking changes to v1.0 required fields.</div>
+    </div>
+    <div class="changelog-entry">
+      <div class="changelog-version">v1.0</div>
+      <div class="changelog-date">May 2026</div>
+      <div class="changelog-desc">Initial release. Core field set established. Phase 1 vehicles (Nissan Leaf). Harvester submissions only.</div>
+    </div>
+    <div class="changelog-entry">
+      <div class="changelog-version">v1.2</div>
+      <div class="changelog-date">Planned</div>
+      <div class="changelog-desc">Phase 2 Renault fields confirmed (ahr_capacity Renault equivalent). Six-monthly fleet record type. Possible community fleet dashboard fields.</div>
+    </div>
+    <div class="changelog-entry">
+      <div class="changelog-version">v2.0</div>
+      <div class="changelog-date">Future</div>
+      <div class="changelog-desc">Phase 3 vehicles. Owner self-reporting tier. Insurer and fleet API access. Possible decentralised storage layer.</div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /doc-wrap -->
+
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Data standard v1.1 · <a href="about.html">About</a> · <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a> · <a href="#">API access</a></p>
+</footer>
+
+</body>
+</html>

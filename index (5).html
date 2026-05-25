@@ -1,0 +1,1781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Survey — Vehicle Lookup</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #111110;
+    --ink-mid: #3d3d39;
+    --ink-light: #6e6e68;
+    --ink-faint: #a0a098;
+    --paper: #f5f4ef;
+    --paper-warm: #eeecea;
+    --card: #ffffff;
+    --border: #d8d6d0;
+    --border-light: #e8e6e0;
+    --green: #1a6e42;
+    --green-bright: #21a35e;
+    --green-bg: #eaf4ee;
+    --green-border: #a8d4b8;
+    --amber: #a05a00;
+    --amber-bg: #fdf0e0;
+    --amber-border: #e8c880;
+    --red: #9a1a1a;
+    --red-bg: #fdeaea;
+    --red-border: #e8b0b0;
+    --blue: #1a3a7a;
+    --blue-bg: #eaeff8;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo .bs-mark {
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .site-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .site-nav a:hover { color: rgba(255,255,255,0.85); }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--ink);
+    padding: 3.5rem 2rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 28px,
+      rgba(255,255,255,0.02) 28px,
+      rgba(255,255,255,0.02) 29px
+    );
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    font-weight: normal;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: rgba(255,255,255,0.55);
+  }
+
+  .hero-sub {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.45);
+    max-width: 500px;
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  /* ── Search box ── */
+  .search-wrap {
+    background: var(--paper);
+    border-radius: var(--radius) var(--radius) 0 0;
+    padding: 1.75rem 2rem;
+    position: relative;
+  }
+
+  .search-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 0.6rem;
+    display: block;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 0;
+  }
+
+  .plate-input {
+    font-family: var(--mono);
+    font-size: 1.6rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: var(--ink);
+    color: #f5e840;
+    border: none;
+    padding: 0.7rem 1.2rem;
+    border-radius: var(--radius) 0 0 var(--radius);
+    width: 260px;
+    outline: none;
+    caret-color: var(--green-bright);
+  }
+
+  .plate-input::placeholder {
+    color: rgba(245,232,64,0.25);
+    letter-spacing: 0.15em;
+  }
+
+  .plate-input:focus {
+    box-shadow: inset 0 0 0 2px var(--green-bright);
+  }
+
+  .search-btn {
+    background: var(--green-bright);
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    transition: background 0.15s;
+    white-space: nowrap;
+  }
+
+  .search-btn:hover { background: var(--green); }
+
+  .search-hint {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 0.6rem;
+    font-family: var(--mono);
+  }
+
+  /* ── Main layout ── */
+  .main {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  /* ── States ── */
+  .state { display: none; }
+  .state.active { display: block; }
+
+  /* ── Empty state ── */
+  .empty-state {
+    padding: 3rem 0;
+    text-align: center;
+    color: var(--ink-faint);
+  }
+
+  .empty-state .empty-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    opacity: 0.4;
+  }
+
+  .empty-state p {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── Not found state ── */
+  .not-found {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .not-found .nf-reg {
+    font-family: var(--mono);
+    font-size: 1.4rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    background: var(--ink);
+    color: #f5e840;
+    display: inline-block;
+    padding: 0.3rem 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .not-found h3 {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: normal;
+    margin-bottom: 0.5rem;
+  }
+
+  .not-found p {
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    max-width: 400px;
+    margin: 0 auto 1.25rem;
+  }
+
+  .not-found .cta-link {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--green);
+    text-decoration: none;
+    border-bottom: 1px solid var(--green-border);
+    padding-bottom: 1px;
+  }
+
+  /* ── Free result card ── */
+  .result-section {
+    margin-top: 1.5rem;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .result-reg {
+    font-family: var(--mono);
+    font-size: 1.5rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    background: var(--ink);
+    color: #f5e840;
+    display: inline-block;
+    padding: 0.25rem 0.9rem;
+    border-radius: 4px;
+  }
+
+  .result-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+    text-align: right;
+  }
+
+  /* ── Free data card ── */
+  .free-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .free-card-header {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .free-card-header .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .free-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--paper);
+    color: var(--ink-faint);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .free-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+  }
+
+  .free-field {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light);
+  }
+
+  .free-field:nth-child(even) { border-right: none; }
+  .free-field:nth-last-child(-n+2) { border-bottom: none; }
+
+  .free-field .ff-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.25rem;
+  }
+
+  .free-field .ff-value {
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  /* ── Grade display ── */
+  .grade-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .grade-letter {
+    width: 36px;
+    height: 36px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .grade-A { background: #d4f0e0; color: #0a5a28; }
+  .grade-B { background: #ddf0d4; color: #2a5a0a; }
+  .grade-C { background: var(--amber-bg); color: var(--amber); }
+  .grade-D { background: #fde8d0; color: #8a3a00; }
+  .grade-F { background: var(--red-bg); color: var(--red); }
+  .grade-unknown { background: var(--paper-warm); color: var(--ink-faint); }
+
+  .grade-label-text {
+    font-size: 0.85rem;
+    color: var(--ink-mid);
+  }
+
+  /* ── Test history mini ── */
+  .test-history-mini {
+    border-top: 1px solid var(--border-light);
+    padding: 1rem 1.25rem;
+    background: var(--paper-warm);
+  }
+
+  .th-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.6rem;
+  }
+
+  .th-entries {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .th-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+
+  .th-entry .th-date { color: var(--ink-light); width: 100px; }
+  .th-entry .th-id { color: var(--ink-faint); }
+
+  .th-entry .th-grade {
+    width: 22px;
+    height: 22px;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  /* ── MOT link ── */
+  .mot-link-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.9rem 1.25rem;
+    border-top: 1px solid var(--border-light);
+    background: var(--blue-bg);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .mot-link-row:hover { background: #dde5f5; }
+
+  .mot-link-row .mot-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  .mot-link-row .mot-text {
+    flex: 1;
+  }
+
+  .mot-link-row .mot-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--blue);
+    letter-spacing: 0.05em;
+  }
+
+  .mot-link-row .mot-sub {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  .mot-link-row .mot-arrow {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--blue);
+    opacity: 0.5;
+  }
+
+  /* ── Premium gate ── */
+  .premium-gate {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 1rem;
+    position: relative;
+  }
+
+  .premium-gate-header {
+    background: var(--ink);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .premium-gate-header .pg-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .premium-gate-header .pg-price {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: #fff;
+  }
+
+  .premium-gate-header .pg-price span {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.4);
+    display: block;
+    text-align: right;
+    margin-top: -4px;
+  }
+
+  .locked-fields {
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .locked-field {
+    background: var(--paper-warm);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.4rem 0.8rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    letter-spacing: 0.04em;
+  }
+
+  .locked-field::before {
+    content: '⬛';
+    font-size: 8px;
+    opacity: 0.3;
+  }
+
+  .premium-cta {
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-light);
+    background: var(--paper-warm);
+  }
+
+  .premium-btn {
+    width: 100%;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    padding: 0.85rem 1.5rem;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .premium-btn:hover { background: #2a2a28; }
+
+  .premium-btn .btn-price {
+    background: var(--green-bright);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+  }
+
+  .premium-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-top: 0.9rem;
+  }
+
+  .pf-item {
+    font-size: 0.78rem;
+    color: var(--ink-light);
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .pf-item::before {
+    content: '✓';
+    color: var(--green-bright);
+    font-family: var(--mono);
+    font-size: 10px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  /* ── Notification capture ── */
+  .notify-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .notify-card .nc-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+
+  .notify-card .nc-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+
+  .notify-card .nc-title {
+    font-family: var(--serif);
+    font-size: 1rem;
+    font-weight: normal;
+    color: var(--ink);
+    margin-bottom: 2px;
+  }
+
+  .notify-card .nc-sub {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+  }
+
+  .notify-row {
+    display: flex;
+    gap: 0;
+    margin-top: 0.75rem;
+  }
+
+  .notify-input {
+    flex: 1;
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.9rem;
+    border: 1px solid var(--border);
+    border-right: none;
+    border-radius: var(--radius) 0 0 var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+  }
+
+  .notify-input:focus { border-color: var(--green-bright); }
+
+  .notify-btn {
+    background: var(--green-bright);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.1rem;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+
+  .notify-btn:hover { background: var(--green); }
+
+  .notify-consent {
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+    margin-top: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .notify-success {
+    display: none;
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 0.75rem 1rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+    margin-top: 0.75rem;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Premium unlocked state ── */
+  .premium-unlocked {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-top: 1rem;
+    animation: fadeUp 0.3s ease both;
+  }
+
+  .premium-unlocked.active { display: block; }
+
+  .pu-header {
+    background: var(--green-bg);
+    border-bottom: 1px solid var(--green-border);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .pu-header .pu-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .pu-header .pu-expiry {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+  }
+
+  .premium-field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0;
+  }
+
+  .pf-row-label {
+    grid-column: 1 / -1;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding: 0.6rem 1.25rem 0.3rem;
+    background: var(--paper-warm);
+    border-top: 1px solid var(--border-light);
+  }
+
+  .pf-cell {
+    padding: 0.85rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    border-right: 1px solid var(--border-light);
+  }
+
+  .pf-cell:nth-child(3n) { border-right: none; }
+
+  .pf-cell .pfc-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 3px;
+  }
+
+  .pf-cell .pfc-value {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--ink);
+  }
+
+  .pf-cell .pfc-value.highlight { color: var(--green); }
+  .pf-cell .pfc-value.warn { color: var(--amber); }
+  .pf-cell .pfc-value.danger { color: var(--red); }
+
+  .flag-row {
+    grid-column: 1 / -1;
+    padding: 0.85rem 1.25rem;
+    border-top: 1px solid var(--border-light);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+
+  .flag-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-right: 4px;
+  }
+
+  .flag-chip {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+  }
+
+  .flag-chip.none { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .flag-chip.warn { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+
+  .gov-section {
+    border-top: 2px solid var(--blue-bg);
+    padding: 1rem 1.25rem;
+    background: var(--blue-bg);
+  }
+
+  .gov-section .gov-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .gov-section .gov-label::after {
+    content: 'AUTO-FETCHED FROM GOV.UK';
+    font-size: 9px;
+    color: rgba(26,58,122,0.4);
+    letter-spacing: 0.08em;
+  }
+
+  .gov-fields { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; }
+
+  .gov-field .gf-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    opacity: 0.6;
+    margin-bottom: 2px;
+  }
+
+  .gov-field .gf-value {
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    color: var(--blue);
+    font-weight: 500;
+  }
+
+  .mot-history-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .mot-history-table th {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--blue);
+    opacity: 0.6;
+    padding: 4px 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(26,58,122,0.15);
+  }
+
+  .mot-history-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid rgba(26,58,122,0.08);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--blue);
+    vertical-align: top;
+  }
+
+  .mot-pass { color: var(--green) !important; font-weight: 500; }
+  .mot-fail { color: var(--red) !important; font-weight: 500; }
+
+  /* ── Filter bar ── */
+  .filter-bar {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 2rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .filter-select {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .filter-select:focus { border-color: var(--green-bright); }
+
+  .filter-clear {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--green);
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  /* ── Browse panel ── */
+  .browse-panel {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 4rem;
+  }
+
+  .browse-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .browse-header h2 {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    font-weight: normal;
+  }
+
+  .browse-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+  }
+
+  .browse-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .browse-row {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.25rem;
+    display: grid;
+    grid-template-columns: 120px 1fr auto auto;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+  }
+
+  .browse-row:hover {
+    border-color: var(--green-bright);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+
+  .browse-plate {
+    font-family: var(--mono);
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    background: var(--ink);
+    color: #f5e840;
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  .browse-vehicle {
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+
+  .browse-vehicle .bv-model { color: var(--ink-mid); font-size: 0.82rem; }
+
+  .browse-date {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .browse-grade {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    gap: 6px;
+    margin-top: 1.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .page-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0.4rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card);
+    color: var(--ink-mid);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .page-btn:hover, .page-btn.active {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .site-footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+
+  .site-footer a { color: var(--green-bright); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .hero { padding: 2rem 1.25rem 0; }
+    .hero h1 { font-size: 2rem; }
+    .search-wrap { padding: 1.25rem; }
+    .plate-input { font-size: 1.2rem; width: 180px; }
+    .main { padding: 0 1.25rem 3rem; }
+    .free-fields { grid-template-columns: 1fr; }
+    .premium-field-grid { grid-template-columns: 1fr 1fr; }
+    .gov-fields { grid-template-columns: 1fr 1fr; }
+    .filter-bar { padding: 0.75rem 1.25rem; }
+    .browse-panel { padding: 1.25rem 1.25rem 3rem; }
+    .browse-row { grid-template-columns: 90px 1fr auto; }
+    .browse-date { display: none; }
+    .site-header { padding: 0 1.25rem; }
+    .site-nav { display: none; }
+    .premium-features { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="site-header">
+  <a href="#" class="site-logo" onclick="showHome()">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <nav class="site-nav">
+    <a href="#" onclick="showBrowse()">Browse database</a>
+    <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a>
+    <a href="about.html">About</a>
+    <a href="bs-data-standard-v1.1.html">Data standard</a>
+  </nav>
+</header>
+
+<!-- ── Hero + Search ── -->
+<div class="hero" id="hero-section">
+  <div class="hero-inner">
+    <div class="hero-label">UK Electric Vehicle Battery Database</div>
+    <h1>No BS.<br><em>Just battery data.</em></h1>
+    <p class="hero-sub">Independent battery health records for used electric vehicles. Collected by verified harvesters. Published openly. Updated continuously.</p>
+
+    <div class="search-wrap">
+      <label class="search-label" for="plate-input">Enter a UK registration number</label>
+      <div class="search-row">
+        <input class="plate-input" id="plate-input" type="text" placeholder="AB12 CDE" maxlength="8"
+          oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9 ]/g,'')"
+          onkeydown="if(event.key==='Enter') doSearch()">
+        <button class="search-btn" onclick="doSearch()">Search →</button>
+      </div>
+      <p class="search-hint">Free: grade, vehicle details, last test date &nbsp;·&nbsp; Premium £4.99: full battery record, 30-day access</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── Filter bar (browse mode) ── -->
+<div class="filter-bar" id="filter-bar" style="display:none;">
+  <span class="filter-label">Filter</span>
+  <select class="filter-select" id="filter-year" onchange="applyFilters()">
+    <option value="">Year</option>
+    <option>2022</option><option>2021</option><option>2020</option><option>2019</option>
+    <option>2018</option><option>2017</option><option>2016</option><option>2015</option>
+    <option>2014</option><option>2013</option><option>2012</option><option>2011</option>
+  </select>
+  <select class="filter-select" id="filter-make" onchange="applyFilters()">
+    <option value="">Manufacturer</option>
+    <option>Nissan</option>
+    <option>Renault</option>
+  </select>
+  <select class="filter-select" id="filter-model" onchange="applyFilters()">
+    <option value="">Model</option>
+    <option>Leaf 24kWh</option><option>Leaf 30kWh</option><option>Leaf 40kWh</option>
+    <option>Kangoo ZE 22</option><option>Kangoo ZE 33</option><option>Zoe ZE40</option>
+  </select>
+  <select class="filter-select" id="filter-grade" onchange="applyFilters()">
+    <option value="">BS Grade</option>
+    <option>A — Excellent</option>
+    <option>B — Good</option>
+    <option>C — Fair</option>
+    <option>D — Poor</option>
+    <option>F — Fail</option>
+  </select>
+  <button class="filter-clear" onclick="clearFilters()">Clear filters</button>
+</div>
+
+<!-- ── Main content area ── -->
+<div id="lookup-panel">
+  <div class="main">
+
+    <!-- Empty state -->
+    <div class="state active" id="state-empty">
+      <div class="empty-state">
+        <div class="empty-icon">🔋</div>
+        <p>Enter a registration number above to search the database</p>
+      </div>
+    </div>
+
+    <!-- Not found -->
+    <div class="state" id="state-notfound">
+      <div class="not-found">
+        <div class="nf-reg" id="nf-reg-display"></div>
+        <h3>No records found for this vehicle</h3>
+        <p>This registration is not yet in the Battery Survey database. Tests are submitted by verified harvesters — you can request one, or become a harvester yourself.</p>
+        <a href="#" class="cta-link">Request a test for this vehicle →</a>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="state" id="state-result">
+
+      <div class="result-section">
+        <div class="result-header">
+          <div class="result-reg" id="result-reg"></div>
+          <div class="result-meta" id="result-meta"></div>
+        </div>
+
+        <!-- Free card -->
+        <div class="free-card">
+          <div class="free-card-header">
+            <span class="label">Free record summary</span>
+            <span class="free-badge">Public access</span>
+          </div>
+
+          <div class="free-fields">
+            <div class="free-field">
+              <div class="ff-label">Manufacturer</div>
+              <div class="ff-value" id="ff-make"></div>
+            </div>
+            <div class="free-field">
+              <div class="ff-label">Model</div>
+              <div class="ff-value" id="ff-model"></div>
+            </div>
+            <div class="free-field">
+              <div class="ff-label">Year</div>
+              <div class="ff-value" id="ff-year"></div>
+            </div>
+            <div class="free-field">
+              <div class="ff-label">Battery size</div>
+              <div class="ff-value" id="ff-battery"></div>
+            </div>
+            <div class="free-field" style="grid-column: span 2;">
+              <div class="ff-label">BS battery grade</div>
+              <div class="ff-value" id="ff-grade"></div>
+            </div>
+          </div>
+
+          <!-- Test history mini -->
+          <div class="test-history-mini">
+            <div class="th-label">Test history</div>
+            <div class="th-entries" id="th-entries"></div>
+          </div>
+
+          <!-- MOT link -->
+          <a class="mot-link-row" id="mot-link" href="#" target="_blank" rel="noopener">
+            <div class="mot-icon">🏛️</div>
+            <div class="mot-text">
+              <div class="mot-title">View full MOT history on GOV.UK</div>
+              <div class="mot-sub" id="mot-sub"></div>
+            </div>
+            <div class="mot-arrow">↗</div>
+          </a>
+        </div>
+
+        <!-- Premium gate (locked) -->
+        <div class="premium-gate" id="premium-gate">
+          <div class="premium-gate-header">
+            <span class="pg-title">Full battery record</span>
+            <div class="pg-price">£4.99 <span>30-day access</span></div>
+          </div>
+
+          <div class="locked-fields">
+            <div class="locked-field">Rapid charge count</div>
+            <div class="locked-field">Slow charge count</div>
+            <div class="locked-field">Cell voltage min/max/avg</div>
+            <div class="locked-field">Cell delta mV</div>
+            <div class="locked-field">Pack voltage</div>
+            <div class="locked-field">AHr capacity</div>
+            <div class="locked-field">Hx value</div>
+            <div class="locked-field">Battery temperatures</div>
+            <div class="locked-field">BMS reprogram history</div>
+            <div class="locked-field">Warranty status</div>
+            <div class="locked-field">VIN confirmation</div>
+            <div class="locked-field">Odometer cross-check</div>
+            <div class="locked-field">GOV.UK MOT data</div>
+            <div class="locked-field">Auto flags</div>
+          </div>
+
+          <div class="premium-cta">
+            <button class="premium-btn" onclick="unlockPremium()">
+              Unlock full record <span class="btn-price">£4.99</span>
+            </button>
+            <div class="premium-features">
+              <div class="pf-item">All BMS fields from the vehicle's own computer</div>
+              <div class="pf-item">Charge history — rapid vs slow counts</div>
+              <div class="pf-item">BMS manipulation detection flags</div>
+              <div class="pf-item">Odometer cross-check vs MOT history</div>
+              <div class="pf-item">Full GOV.UK MOT history integrated</div>
+              <div class="pf-item">30-day access — free if new test appears</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Premium unlocked -->
+        <div class="premium-unlocked" id="premium-unlocked">
+          <div class="pu-header">
+            <span class="pu-label">Full battery record — unlocked</span>
+            <span class="pu-expiry" id="pu-expiry"></span>
+          </div>
+
+          <div class="premium-field-grid">
+
+            <div class="pf-row-label">Battery condition</div>
+            <div class="pf-cell"><div class="pfc-label">AHr capacity</div><div class="pfc-value highlight" id="pu-ahr"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Pack voltage</div><div class="pfc-value" id="pu-pack"></div></div>
+            <div class="pf-cell"><div class="pfc-label">SOC at test</div><div class="pfc-value" id="pu-soc"></div></div>
+
+            <div class="pf-row-label">Cell analysis</div>
+            <div class="pf-cell"><div class="pfc-label">Cell delta</div><div class="pfc-value" id="pu-delta"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Cell min / max</div><div class="pfc-value" id="pu-cells"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Cell average</div><div class="pfc-value" id="pu-cellavg"></div></div>
+
+            <div class="pf-row-label">Temperature</div>
+            <div class="pf-cell"><div class="pfc-label">Battery min</div><div class="pfc-value" id="pu-tmin"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Battery max</div><div class="pfc-value" id="pu-tmax"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Ambient</div><div class="pfc-value" id="pu-tamb"></div></div>
+
+            <div class="pf-row-label">Charge history — read from BMS, cannot be reset</div>
+            <div class="pf-cell"><div class="pfc-label">Rapid DC charges</div><div class="pfc-value" id="pu-rapid"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Slow AC charges</div><div class="pfc-value" id="pu-slow"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Rapid charge ratio</div><div class="pfc-value" id="pu-ratio"></div></div>
+
+            <div class="pf-row-label">BMS history</div>
+            <div class="pf-cell"><div class="pfc-label">Reprograms</div><div class="pfc-value" id="pu-reprogram"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Last reprogram</div><div class="pfc-value" id="pu-repdate"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Warranty</div><div class="pfc-value" id="pu-warranty"></div></div>
+
+            <div class="pf-row-label">Vehicle identity</div>
+            <div class="pf-cell"><div class="pfc-label">VIN (from BMS)</div><div class="pfc-value" id="pu-vin"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Odometer</div><div class="pfc-value" id="pu-odo"></div></div>
+            <div class="pf-cell"><div class="pfc-label">Odometer check</div><div class="pfc-value" id="pu-odocheck"></div></div>
+
+            <div class="flag-row">
+              <span class="flag-label">Flags</span>
+              <div id="pu-flags"></div>
+            </div>
+
+          </div>
+
+          <div class="gov-section">
+            <div class="gov-label">GOV.UK data</div>
+            <div class="gov-fields">
+              <div class="gov-field"><div class="gf-label">MOT status</div><div class="gf-value" id="pu-mot-status"></div></div>
+              <div class="gov-field"><div class="gf-label">Tax status</div><div class="gf-value" id="pu-tax"></div></div>
+              <div class="gov-field"><div class="gf-label">First registered</div><div class="gf-value" id="pu-firstreg"></div></div>
+            </div>
+            <table class="mot-history-table" style="margin-top:1rem;">
+              <thead><tr><th>Date</th><th>Result</th><th>Mileage</th><th>Advisories</th></tr></thead>
+              <tbody id="pu-mot-history"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Notification card -->
+        <div class="notify-card" id="notify-card">
+          <div class="nc-header">
+            <div class="nc-icon">🔔</div>
+            <div>
+              <div class="nc-title">Get notified when a new test appears</div>
+              <div class="nc-sub">This vehicle is tested on a six-monthly cycle. We'll email you once — free — if a new record is submitted in the next 90 days.</div>
+            </div>
+          </div>
+          <div class="notify-row">
+            <input class="notify-input" id="notify-email" type="email" placeholder="your@email.com">
+            <button class="notify-btn" onclick="submitNotify()">Notify me</button>
+          </div>
+          <p class="notify-consent">One email only. No marketing. No account created. You can unsubscribe via the link in the email. We store your email address solely for this notification.</p>
+          <div class="notify-success" id="notify-success">✓ &nbsp;Registered — we'll email you if a new test appears for <span id="notify-reg-confirm"></span> within 90 days.</div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Browse panel ── -->
+<div id="browse-panel" style="display:none;">
+  <div class="browse-panel">
+    <div class="browse-header">
+      <h2>Browse the database</h2>
+      <span class="browse-count" id="browse-count"></span>
+    </div>
+    <div class="browse-grid" id="browse-grid"></div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Data standard v1.1 · <a href="bs-data-standard-v1.1.html">View methodology</a> · <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a> · <a href="#">API access</a></p>
+</footer>
+
+<script>
+// ── Sample data ──────────────────────────────────────────────────────────────
+const DB = {
+  'BK17ABC': {
+    reg: 'BK17ABC', make: 'Renault', model: 'Kangoo ZE 33', year: 2017,
+    battery: '33 kWh', grade: 'B', gradeLabel: 'Good',
+    tests: [
+      { id: 'BS-2026-00001', date: '2026-05-25', grade: 'B' },
+    ],
+    premium: {
+      ahr: '27.4 AHr', pack: '358.2 V', soc: '67%',
+      delta: '18 mV', cells: '3.721 / 3.739 V', cellavg: '3.731 V',
+      tmin: '16.5 °C', tmax: '19.0 °C', tamb: '14 °C',
+      rapid: '47', slow: '612', ratio: '7.1%',
+      reprogram: '1 event', repdate: '12 Mar 2025', warranty: 'Expired',
+      vin: 'VF1AG000X12345678', odo: '21,547 km',
+      odocheck: '✓ Consistent', flags: [],
+      gov: { motStatus: 'Valid', tax: 'Taxed', firstReg: 'Sep 2017' },
+      motHistory: [
+        { date: '2025-09-14', result: 'Pass', miles: '18,240 mi', advisory: 'Rear brake disc slightly pitted' },
+        { date: '2024-09-02', result: 'Pass', miles: '14,100 mi', advisory: '—' },
+        { date: '2023-08-28', result: 'Pass', miles: '9,820 mi', advisory: '—' },
+      ]
+    }
+  },
+  'LD19ZEF': {
+    reg: 'LD19ZEF', make: 'Nissan', model: 'Leaf 40kWh', year: 2019,
+    battery: '40 kWh', grade: 'A', gradeLabel: 'Excellent',
+    tests: [
+      { id: 'BS-2026-00003', date: '2026-04-11', grade: 'A' },
+      { id: 'BS-2025-00041', date: '2025-10-08', grade: 'A' },
+    ],
+    premium: {
+      ahr: '58.2 AHr', pack: '391.4 V', soc: '81%',
+      delta: '9 mV', cells: '3.748 / 3.757 V', cellavg: '3.752 V',
+      tmin: '18.0 °C', tmax: '20.5 °C', tamb: '17 °C',
+      rapid: '31', slow: '1,204', ratio: '2.5%',
+      reprogram: 'None', repdate: '—', warranty: 'Active',
+      vin: 'SJNFAAZE1U0012345', odo: '38,420 km',
+      odocheck: '✓ Consistent', flags: [],
+      gov: { motStatus: 'Valid', tax: 'Taxed', firstReg: 'Mar 2019' },
+      motHistory: [
+        { date: '2026-03-22', result: 'Pass', miles: '23,410 mi', advisory: '—' },
+        { date: '2025-03-18', result: 'Pass', miles: '18,100 mi', advisory: '—' },
+      ]
+    }
+  },
+  'YE63KWP': {
+    reg: 'YE63KWP', make: 'Nissan', model: 'Leaf 24kWh', year: 2013,
+    battery: '24 kWh', grade: 'C', gradeLabel: 'Fair',
+    tests: [
+      { id: 'BS-2026-00007', date: '2026-03-05', grade: 'C' },
+      { id: 'BS-2025-00112', date: '2025-09-14', grade: 'C' },
+      { id: 'BS-2024-00089', date: '2024-09-02', grade: 'D' },
+    ],
+    premium: {
+      ahr: '43.1 AHr', pack: '312.8 V', soc: '74%',
+      delta: '62 mV', cells: '3.580 / 3.642 V', cellavg: '3.614 V',
+      tmin: '12.0 °C', tmax: '15.5 °C', tamb: '11 °C',
+      rapid: '418', slow: '2,841', ratio: '12.8%',
+      reprogram: 'None', repdate: '—', warranty: 'Expired',
+      vin: 'SJNFAAZE4U0098765', odo: '91,240 km',
+      odocheck: '✓ Consistent', flags: ['high_rapid_charge_ratio'],
+      gov: { motStatus: 'Valid', tax: 'Taxed', firstReg: 'Dec 2013' },
+      motHistory: [
+        { date: '2026-01-15', result: 'Pass', miles: '54,800 mi', advisory: 'Tyre worn close to limit (1.6mm) nearside front' },
+        { date: '2025-01-20', result: 'Fail', miles: '49,200 mi', advisory: 'Brake pads worn below minimum' },
+        { date: '2024-01-09', result: 'Pass', miles: '43,500 mi', advisory: '—' },
+      ]
+    }
+  }
+};
+
+const BROWSE_DATA = [
+  { reg: 'LD19ZEF', make: 'Nissan', model: 'Leaf 40kWh', year: 2019, grade: 'A', lastTest: '11 Apr 2026' },
+  { reg: 'BK17ABC', make: 'Renault', model: 'Kangoo ZE 33', year: 2017, grade: 'B', lastTest: '25 May 2026' },
+  { reg: 'MK18ZOE', make: 'Renault', model: 'Zoe ZE40', year: 2018, grade: 'B', lastTest: '02 May 2026' },
+  { reg: 'PL15LEF', make: 'Nissan', model: 'Leaf 30kWh', year: 2015, grade: 'B', lastTest: '18 Apr 2026' },
+  { reg: 'EO14LEF', make: 'Nissan', model: 'Leaf 24kWh', year: 2014, grade: 'B', lastTest: '29 Mar 2026' },
+  { reg: 'YE63KWP', make: 'Nissan', model: 'Leaf 24kWh', year: 2013, grade: 'C', lastTest: '05 Mar 2026' },
+  { reg: 'HJ66ZOE', make: 'Renault', model: 'Zoe ZE40', year: 2016, grade: 'C', lastTest: '14 Feb 2026' },
+  { reg: 'SV67KAN', make: 'Renault', model: 'Kangoo ZE 22', year: 2015, grade: 'C', lastTest: '08 Feb 2026' },
+  { reg: 'DF12LEF', make: 'Nissan', model: 'Leaf 24kWh', year: 2012, grade: 'D', lastTest: '22 Jan 2026' },
+  { reg: 'GR11KAN', make: 'Renault', model: 'Kangoo ZE 22', year: 2013, grade: 'F', lastTest: '10 Jan 2026' },
+];
+
+// ── Grade colours ──
+function gradeStyle(g) {
+  const styles = {A:'grade-A',B:'grade-B',C:'grade-C',D:'grade-D',F:'grade-F'};
+  return styles[g] || 'grade-unknown';
+}
+
+function gradeColor(g) {
+  const c = {A:'#d4f0e0',B:'#ddf0d4',C:'#fdf0e0',D:'#fde8d0',F:'#fdeaea'};
+  const t = {A:'#0a5a28',B:'#2a5a0a',C:'#a05a00',D:'#8a3a00',F:'#9a1a1a'};
+  return `background:${c[g]||'#f0f0e8'};color:${t[g]||'#555'};`;
+}
+
+let currentReg = '';
+let premiumUnlocked = {};
+
+// ── Search ──
+function doSearch() {
+  const raw = document.getElementById('plate-input').value.trim().replace(/\s/g,'').toUpperCase();
+  if (!raw) return;
+  currentReg = raw;
+
+  // hide browse, show lookup
+  document.getElementById('browse-panel').style.display = 'none';
+  document.getElementById('filter-bar').style.display = 'none';
+  document.getElementById('lookup-panel').style.display = 'block';
+  document.getElementById('hero-section').style.display = '';
+
+  ['state-empty','state-notfound','state-result'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+
+  const record = DB[raw];
+  if (!record) {
+    document.getElementById('nf-reg-display').textContent = raw;
+    document.getElementById('state-notfound').classList.add('active');
+    return;
+  }
+
+  populateFree(record);
+  document.getElementById('state-result').classList.add('active');
+
+  // Check if already unlocked
+  if (premiumUnlocked[raw]) {
+    showPremiumData(record);
+  } else {
+    document.getElementById('premium-gate').style.display = 'block';
+    document.getElementById('premium-unlocked').classList.remove('active');
+  }
+}
+
+function populateFree(r) {
+  document.getElementById('result-reg').textContent = r.reg;
+  document.getElementById('result-meta').innerHTML =
+    `${r.tests.length} test${r.tests.length!==1?'s':''} on record<br>Last test: ${r.tests[0].date}`;
+
+  document.getElementById('ff-make').textContent = r.make;
+  document.getElementById('ff-model').textContent = r.model;
+  document.getElementById('ff-year').textContent = r.year;
+  document.getElementById('ff-battery').textContent = r.battery;
+
+  const gradeEl = document.getElementById('ff-grade');
+  gradeEl.innerHTML = `<div class="grade-display">
+    <div class="grade-letter ${gradeStyle(r.grade)}">${r.grade}</div>
+    <span class="grade-label-text">${r.gradeLabel}</span>
+  </div>`;
+
+  // Test history
+  const thEl = document.getElementById('th-entries');
+  thEl.innerHTML = r.tests.map(t => `
+    <div class="th-entry">
+      <div class="th-grade ${gradeStyle(t.grade)}">${t.grade}</div>
+      <div class="th-date">${t.date}</div>
+      <div class="th-id">${t.id}</div>
+    </div>`).join('');
+
+  // MOT link
+  const motUrl = `https://www.check-mot.service.gov.uk/?registration=${r.reg}`;
+  document.getElementById('mot-link').href = motUrl;
+  document.getElementById('mot-sub').textContent = `Opens GOV.UK MOT history checker for ${r.reg}`;
+}
+
+// ── Premium unlock ──
+function unlockPremium() {
+  // In production: trigger Stripe payment here
+  // For demo: unlock immediately
+  const record = DB[currentReg];
+  if (!record) return;
+
+  premiumUnlocked[currentReg] = true;
+  document.getElementById('premium-gate').style.display = 'none';
+  showPremiumData(record);
+}
+
+function showPremiumData(r) {
+  const p = r.premium;
+  const el = id => document.getElementById(id);
+
+  // expiry
+  const exp = new Date(); exp.setDate(exp.getDate() + 30);
+  el('pu-expiry').textContent = `Access expires ${exp.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}`;
+
+  el('pu-ahr').textContent = p.ahr;
+  el('pu-pack').textContent = p.pack;
+  el('pu-soc').textContent = p.soc;
+  el('pu-delta').textContent = p.delta;
+  el('pu-cells').textContent = p.cells;
+  el('pu-cellavg').textContent = p.cellavg;
+  el('pu-tmin').textContent = p.tmin;
+  el('pu-tmax').textContent = p.tmax;
+  el('pu-tamb').textContent = p.tamb;
+  el('pu-rapid').textContent = p.rapid;
+  el('pu-slow').textContent = p.slow;
+
+  const ratioVal = parseFloat(p.ratio);
+  const ratioEl = el('pu-ratio');
+  ratioEl.textContent = p.ratio;
+  ratioEl.className = 'pfc-value' + (ratioVal > 25 ? ' warn' : ratioVal > 15 ? '' : ' highlight');
+
+  el('pu-reprogram').textContent = p.reprogram;
+  el('pu-repdate').textContent = p.repdate;
+  el('pu-warranty').textContent = p.warranty;
+  el('pu-vin').textContent = p.vin;
+  el('pu-odo').textContent = p.odo;
+
+  const odoEl = el('pu-odocheck');
+  odoEl.textContent = p.odocheck;
+  odoEl.className = 'pfc-value ' + (p.odocheck.startsWith('✓') ? 'highlight' : 'danger');
+
+  // Flags
+  const flagsEl = el('pu-flags');
+  if (p.flags.length === 0) {
+    flagsEl.innerHTML = '<span class="flag-chip none">No flags</span>';
+  } else {
+    flagsEl.innerHTML = p.flags.map(f =>
+      `<span class="flag-chip warn">${f.replace(/_/g,' ')}</span>`
+    ).join('');
+  }
+
+  // GOV
+  el('pu-mot-status').textContent = p.gov.motStatus;
+  el('pu-tax').textContent = p.gov.tax;
+  el('pu-firstreg').textContent = p.gov.firstReg;
+
+  // MOT history
+  const tbody = el('pu-mot-history');
+  tbody.innerHTML = p.motHistory.map(m => `
+    <tr>
+      <td>${m.date}</td>
+      <td class="mot-${m.result.toLowerCase()}">${m.result}</td>
+      <td>${m.miles}</td>
+      <td>${m.advisory}</td>
+    </tr>`).join('');
+
+  document.getElementById('premium-unlocked').classList.add('active');
+}
+
+// ── Notification ──
+function submitNotify() {
+  const email = document.getElementById('notify-email').value.trim();
+  if (!email || !email.includes('@')) {
+    document.getElementById('notify-email').style.borderColor = 'var(--red)';
+    return;
+  }
+  document.getElementById('notify-email').style.borderColor = '';
+  document.getElementById('notify-reg-confirm').textContent = currentReg;
+  document.getElementById('notify-success').style.display = 'block';
+  document.getElementById('notify-email').value = '';
+  // In production: POST to API with {email, registration, created_at}
+}
+
+// ── Browse ──
+let filteredData = [...BROWSE_DATA];
+let currentPage = 0;
+const PAGE_SIZE = 8;
+
+function showBrowse() {
+  document.getElementById('lookup-panel').style.display = 'none';
+  document.getElementById('hero-section').style.display = 'none';
+  document.getElementById('browse-panel').style.display = 'block';
+  document.getElementById('filter-bar').style.display = 'flex';
+  filteredData = [...BROWSE_DATA];
+  currentPage = 0;
+  renderBrowse();
+}
+
+function showHome() {
+  document.getElementById('lookup-panel').style.display = 'block';
+  document.getElementById('hero-section').style.display = '';
+  document.getElementById('browse-panel').style.display = 'none';
+  document.getElementById('filter-bar').style.display = 'none';
+}
+
+function applyFilters() {
+  const year = document.getElementById('filter-year').value;
+  const make = document.getElementById('filter-make').value;
+  const model = document.getElementById('filter-model').value;
+  const grade = document.getElementById('filter-grade').value.split(' ')[0];
+
+  filteredData = BROWSE_DATA.filter(r => {
+    if (year && r.year.toString() !== year) return false;
+    if (make && r.make !== make) return false;
+    if (model && r.model !== model) return false;
+    if (grade && r.grade !== grade) return false;
+    return true;
+  });
+  currentPage = 0;
+  renderBrowse();
+}
+
+function clearFilters() {
+  ['filter-year','filter-make','filter-model','filter-grade'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  filteredData = [...BROWSE_DATA];
+  currentPage = 0;
+  renderBrowse();
+}
+
+function renderBrowse() {
+  const total = filteredData.length;
+  const start = currentPage * PAGE_SIZE;
+  const page = filteredData.slice(start, start + PAGE_SIZE);
+
+  document.getElementById('browse-count').textContent =
+    `${total} record${total!==1?'s':''} in database`;
+
+  const grid = document.getElementById('browse-grid');
+  grid.innerHTML = page.map(r => `
+    <a class="browse-row" href="#" onclick="selectBrowseVehicle('${r.reg}');return false;">
+      <span class="browse-plate">${r.reg}</span>
+      <div class="browse-vehicle">
+        <div>${r.make} ${r.year}</div>
+        <div class="bv-model">${r.model}</div>
+      </div>
+      <div class="browse-date">Last test<br>${r.lastTest}</div>
+      <div class="browse-grade ${gradeStyle(r.grade)}">${r.grade}</div>
+    </a>`).join('');
+
+  // Pagination
+  const pages = Math.ceil(total / PAGE_SIZE);
+  const pag = document.getElementById('pagination');
+  if (pages <= 1) { pag.innerHTML = ''; return; }
+  pag.innerHTML = Array.from({length:pages},(_,i) =>
+    `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i+1}</button>`
+  ).join('');
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderBrowse();
+  document.getElementById('browse-panel').scrollIntoView({behavior:'smooth'});
+}
+
+function selectBrowseVehicle(reg) {
+  document.getElementById('plate-input').value = reg;
+  showHome();
+  doSearch();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+
+</body>
+</html>

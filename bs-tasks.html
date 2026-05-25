@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Survey — Harvester Tasks</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #111110;
+    --ink-mid: #3d3d39;
+    --ink-light: #6e6e68;
+    --ink-faint: #a0a098;
+    --paper: #f5f4ef;
+    --paper-warm: #eeecea;
+    --card: #ffffff;
+    --border: #d8d6d0;
+    --border-light: #e8e6e0;
+    --green: #1a6e42;
+    --green-bright: #21a35e;
+    --green-bg: #eaf4ee;
+    --green-border: #a8d4b8;
+    --amber: #a05a00;
+    --amber-bg: #fdf0e0;
+    --amber-border: #e8c880;
+    --red: #9a1a1a;
+    --red-bg: #fdeaea;
+    --blue: #1a3a7a;
+    --blue-bg: #eaeff8;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── Shared header ── */
+  .site-header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo .bs-mark {
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .site-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .site-nav a:hover { color: rgba(255,255,255,0.85); }
+  .site-nav a.active { color: #fff; }
+
+  /* ── Gate (locked state) ── */
+  .gate-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+    text-align: center;
+  }
+
+  .gate-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  .gate-wrap h2 {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: normal;
+    margin-bottom: 0.75rem;
+  }
+
+  .gate-wrap p {
+    color: var(--ink-light);
+    font-size: 0.9rem;
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .gate-steps {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin: 1.5rem 0;
+    text-align: left;
+  }
+
+  .gate-step {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border-light);
+    align-items: center;
+  }
+
+  .gate-step:last-child { border-bottom: none; }
+
+  .gs-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--paper-warm);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+  }
+
+  .gs-num.done {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: #fff;
+  }
+
+  .gs-text {
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    line-height: 1.5;
+  }
+
+  .gs-text strong { color: var(--ink); display: block; font-size: 0.9rem; }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--ink);
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 28px,
+      rgba(255,255,255,0.02) 28px, rgba(255,255,255,0.02) 29px
+    );
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-text { flex: 1; min-width: 260px; }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 2.4rem;
+    font-weight: normal;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero h1 em { font-style: italic; color: rgba(255,255,255,0.5); }
+
+  .hero-sub {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+    max-width: 440px;
+  }
+
+  .hero-hid {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.25rem;
+    flex-shrink: 0;
+  }
+
+  .hid-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    margin-bottom: 4px;
+  }
+
+  .hid-value {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--green-bright);
+    letter-spacing: 0.1em;
+  }
+
+  .hid-rep {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    margin-top: 4px;
+  }
+
+  /* ── Filter strip ── */
+  .filter-strip {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 2rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .filter-select {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--card);
+    color: var(--ink);
+    cursor: pointer;
+    outline: none;
+  }
+
+  .filter-select:focus { border-color: var(--green-bright); }
+
+  .task-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-left: auto;
+  }
+
+  /* ── Task board ── */
+  .board-wrap {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1.5rem 2rem 5rem;
+  }
+
+  .board-section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 2rem;
+  }
+
+  /* ── Task card ── */
+  .task-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .task-card:hover {
+    border-color: var(--green-bright);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  .task-card.featured {
+    border-color: var(--green-border);
+    border-left: 3px solid var(--green-bright);
+  }
+
+  .task-card-top {
+    padding: 1rem 1.25rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .task-vehicle-badge {
+    background: var(--ink);
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    flex-shrink: 0;
+    text-align: center;
+    min-width: 80px;
+  }
+
+  .tvb-make {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .tvb-model {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    display: block;
+    line-height: 1.2;
+  }
+
+  .tvb-year {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .task-info { flex: 1; }
+
+  .task-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+  }
+
+  .task-desc {
+    font-size: 0.85rem;
+    color: var(--ink-light);
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+  }
+
+  .task-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+  }
+
+  .task-tag {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .tag-location { background: var(--blue-bg); color: var(--blue); border: 1px solid #b8c8f0; }
+  .tag-type { background: var(--paper-warm); color: var(--ink-light); border: 1px solid var(--border); }
+  .tag-dongle { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-border); }
+  .tag-phase2 { background: var(--paper-warm); color: var(--ink-faint); border: 1px solid var(--border); }
+
+  .task-fee {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .tf-amount {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--green);
+    line-height: 1;
+    display: block;
+  }
+
+  .tf-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    display: block;
+    margin-top: 3px;
+  }
+
+  .task-card-bottom {
+    border-top: 1px solid var(--border-light);
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--paper-warm);
+    gap: 0.75rem;
+  }
+
+  .tcb-meta {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    line-height: 1.6;
+  }
+
+  .tcb-meta strong { color: var(--ink-mid); font-weight: 500; }
+
+  .task-apply-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .task-apply-btn.available {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .task-apply-btn.available:hover { background: #2a2a28; }
+
+  .task-apply-btn.needs-dongle {
+    background: var(--amber-bg);
+    color: var(--amber);
+    border: 1px solid var(--amber-border);
+    cursor: default;
+  }
+
+  .task-apply-btn.phase2 {
+    background: var(--paper-warm);
+    color: var(--ink-faint);
+    border: 1px solid var(--border);
+    cursor: default;
+  }
+
+  /* ── Apply modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(17,17,16,0.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+  }
+
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--card);
+    border-radius: var(--radius);
+    max-width: 480px;
+    width: 100%;
+    overflow: hidden;
+    animation: fadeUp 0.2s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal-header {
+    background: var(--ink);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .modal-header h3 {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: #fff;
+  }
+
+  .modal-header .mh-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    margin-top: 3px;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.4);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .modal-body { padding: 1.5rem; }
+
+  .modal-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 1rem;
+  }
+
+  .modal-field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+  }
+
+  .modal-field input, .modal-field textarea {
+    font-family: Georgia, serif;
+    font-size: 0.9rem;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+
+  .modal-field input:focus, .modal-field textarea:focus {
+    border-color: var(--green-bright);
+    background: var(--card);
+  }
+
+  .modal-field textarea { resize: vertical; min-height: 70px; }
+
+  .modal-fee-display {
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .mfd-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--green);
+  }
+
+  .mfd-amount {
+    font-family: var(--serif);
+    font-size: 1.3rem;
+    color: var(--green);
+  }
+
+  .modal-submit {
+    width: 100%;
+    background: var(--green-bright);
+    color: #fff;
+    border: none;
+    padding: 0.85rem;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .modal-submit:hover { background: var(--green); }
+
+  .modal-note {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 0.6rem;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* ── Dongle upsell card ── */
+  .dongle-upsell {
+    background: var(--ink);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+  }
+
+  .du-icon { font-size: 2rem; flex-shrink: 0; margin-top: 2px; }
+
+  .du-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.35rem;
+  }
+
+  .du-body {
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .du-btn {
+    display: inline-block;
+    background: var(--green-bright);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .du-btn:hover { background: var(--green); }
+
+  /* ── Empty task state ── */
+  .empty-tasks {
+    text-align: center;
+    padding: 2.5rem;
+    color: var(--ink-faint);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  .empty-tasks p {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    margin-top: 0.5rem;
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .site-footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+
+  .site-footer a { color: var(--green-bright); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .site-header { padding: 0 1.25rem; }
+    .site-nav { display: none; }
+    .hero { padding: 2rem 1.25rem 2rem; }
+    .hero h1 { font-size: 1.8rem; }
+    .hero-hid { display: none; }
+    .filter-strip { padding: 0.75rem 1.25rem; }
+    .task-count { display: none; }
+    .board-wrap { padding: 1.25rem 1.25rem 4rem; }
+    .task-card-top { flex-wrap: wrap; gap: 0.75rem; }
+    .task-fee { text-align: left; }
+    .site-footer { padding: 1.25rem; }
+    .dongle-upsell { flex-direction: column; gap: 0.75rem; }
+    .gate-wrap { padding: 2rem 1.25rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="site-logo">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Lookup</a>
+    <a href="index.html">Browse database</a>
+    <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a>
+    <a href="about.html">About</a>
+    <a href="bs-data-standard-v1.1.html">Data standard</a>
+  </nav>
+</header>
+
+<!-- ══════════════════════════════
+     LOCKED STATE — no HV ID yet
+═══════════════════════════════ -->
+<div id="state-locked">
+
+  <div style="background:var(--ink);padding:2.5rem 2rem 2.5rem;position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(255,255,255,0.02) 28px,rgba(255,255,255,0.02) 29px);pointer-events:none;"></div>
+    <div style="max-width:720px;margin:0 auto;position:relative;">
+      <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--green-bright);margin-bottom:0.75rem;">Harvester Tasks</div>
+      <h1 style="font-family:var(--serif);font-size:2.4rem;font-weight:normal;color:#fff;line-height:1.15;margin-bottom:0.5rem;">Paid harvests.<br><em>Real vehicles.</em></h1>
+      <p style="font-size:0.88rem;color:rgba(255,255,255,0.4);line-height:1.6;max-width:440px;">One-off paid jobs testing other people's electric vehicles. Only available to verified Battery Survey harvesters who have completed at least one self-submission.</p>
+    </div>
+  </div>
+
+  <div class="gate-wrap">
+    <div class="gate-icon">🔒</div>
+    <h2>Tasks unlock after your first submission</h2>
+    <p>Harvester Tasks are available to verified harvesters only. Complete your first self-submission — your own Nissan Leaf — to receive a Harvester ID and unlock this board.</p>
+
+    <div class="gate-steps">
+      <div class="gate-step">
+        <div class="gs-num done">✓</div>
+        <div class="gs-text">
+          <strong>You found Battery Survey</strong>
+          That's the hard part done.
+        </div>
+      </div>
+      <div class="gate-step">
+        <div class="gs-num">2</div>
+        <div class="gs-text">
+          <strong>Submit your own Nissan Leaf — £15</strong>
+          LeafSpy Pro, compatible dongle, screen recording. 20 minutes. Receive your Harvester ID by email.
+        </div>
+      </div>
+      <div class="gate-step">
+        <div class="gs-num">3</div>
+        <div class="gs-text">
+          <strong>Order the official Battery Survey dongle</strong>
+          NFC-authenticated. Required for task submissions. Unlocks the full task board.
+        </div>
+      </div>
+      <div class="gate-step">
+        <div class="gs-num">4</div>
+        <div class="gs-text">
+          <strong>Take on tasks — from £50 per harvest</strong>
+          Pre-purchase inspections, fleet checks, Renault ZE harvests. You choose what you take on.
+        </div>
+      </div>
+    </div>
+
+    <a href="bs-submit.html" style="display:block;background:var(--green-bright);color:#fff;font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;padding:0.9rem;border-radius:var(--radius);text-decoration:none;text-align:center;transition:background 0.15s;" onmouseover="this.style.background='#1a6e42'" onmouseout="this.style.background='#21a35e'">
+      Submit your Leaf to get started →
+    </a>
+
+    <p style="font-size:0.78rem;color:var(--ink-faint);margin-top:1rem;text-align:center;">Already have a Harvester ID? <button onclick="unlockBoard()" style="background:none;border:none;color:var(--green);font-family:var(--mono);font-size:11px;cursor:pointer;text-decoration:underline;padding:0;">Enter it here to access the board</button></p>
+
+    <div id="hid-entry" style="display:none;margin-top:1rem;">
+      <div style="display:flex;gap:0;">
+        <input type="text" id="hid-input" placeholder="HV-00001" style="font-family:var(--mono);font-size:13px;padding:0.65rem 0.9rem;border:1px solid var(--border);border-right:none;border-radius:var(--radius) 0 0 var(--radius);background:var(--paper);color:var(--ink);outline:none;flex:1;" oninput="this.value=this.value.toUpperCase()">
+        <button onclick="checkHID()" style="background:var(--ink);color:#fff;border:none;padding:0.65rem 1.1rem;font-family:var(--mono);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;border-radius:0 var(--radius) var(--radius) 0;cursor:pointer;">Unlock →</button>
+      </div>
+      <p id="hid-error" style="display:none;font-family:var(--mono);font-size:11px;color:var(--red);margin-top:0.5rem;"></p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     UNLOCKED STATE — HV ID set
+═══════════════════════════════ -->
+<div id="state-unlocked" style="display:none;">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-label">Harvester Tasks — live board</div>
+        <h1>Available<br><em>harvests near you</em></h1>
+        <p class="hero-sub">One-off paid jobs. Accept a task, complete the harvest, submit the data, get paid. Tasks marked with ⚡ require the official Battery Survey dongle.</p>
+      </div>
+      <div class="hero-hid">
+        <div class="hid-label">Your harvester ID</div>
+        <div class="hid-value" id="hid-display">HV-00001</div>
+        <div class="hid-rep" id="rep-display">Reputation: Building</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="filter-strip">
+    <span class="filter-label">Filter</span>
+    <select class="filter-select" id="filter-region" onchange="renderTasks()">
+      <option value="">All regions</option>
+      <option>North West</option>
+      <option>North Wales</option>
+      <option>Yorkshire</option>
+      <option>Midlands</option>
+      <option>London</option>
+      <option>South East</option>
+      <option>Scotland</option>
+    </select>
+    <select class="filter-select" id="filter-vehicle" onchange="renderTasks()">
+      <option value="">All vehicles</option>
+      <option>Nissan Leaf</option>
+      <option value="renault" disabled>Renault ZE — phase 2</option>
+    </select>
+    <select class="filter-select" id="filter-dongle" onchange="renderTasks()">
+      <option value="">All tasks</option>
+      <option value="any">No dongle required</option>
+      <option value="bs">Official BS dongle required</option>
+    </select>
+    <span class="task-count" id="task-count"></span>
+  </div>
+
+  <div class="board-wrap">
+
+    <!-- Dongle upsell -->
+    <div class="dongle-upsell" id="dongle-upsell">
+      <div class="du-icon">⚡</div>
+      <div>
+        <div class="du-title">Some tasks require the official Battery Survey dongle</div>
+        <div class="du-body">Tasks marked ⚡ use NFC authentication — only official BS dongles can submit these records. The dongle pays for itself on the first task. Order now to unlock the full task board.</div>
+        <a href="#" class="du-btn">Order official dongle →</a>
+      </div>
+    </div>
+
+    <!-- Featured task (Birkenhead Kangoo — phase 2 preview) -->
+    <div class="board-section-label" id="featured-label">Featured task</div>
+    <div class="task-list" id="featured-tasks"></div>
+
+    <!-- Available tasks -->
+    <div class="board-section-label" id="available-label" style="margin-top:1.5rem;">Available now</div>
+    <div class="task-list" id="available-tasks"></div>
+
+    <!-- Coming soon -->
+    <div class="board-section-label" style="margin-top:1.5rem;">Coming — phase 2</div>
+    <div class="task-list" id="phase2-tasks"></div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     APPLY MODAL
+═══════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3 id="modal-title">Apply for task</h3>
+        <div class="mh-sub" id="modal-sub"></div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-fee-display">
+        <span class="mfd-label">Task fee</span>
+        <span class="mfd-amount" id="modal-fee"></span>
+      </div>
+      <div class="modal-field">
+        <label>Your Harvester ID</label>
+        <input type="text" id="modal-hid" readonly style="background:var(--paper-warm);color:var(--ink-mid);">
+      </div>
+      <div class="modal-field">
+        <label>Your availability — when can you do this?</label>
+        <input type="text" id="modal-availability" placeholder="e.g. This weekend, or any weekday after 5pm">
+      </div>
+      <div class="modal-field">
+        <label>Any questions or notes for the requester (optional)</label>
+        <textarea id="modal-notes" placeholder="e.g. I have a KW902 and have done 3 Leaf tests. Happy to travel to CH43."></textarea>
+      </div>
+      <button class="modal-submit" onclick="submitApplication()">Apply for this task →</button>
+      <p class="modal-note">The requester will contact you by email to confirm. Your identity remains private until both parties confirm.</p>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Data standard v1.1 · <a href="bs-data-standard-v1.1.html">View methodology</a> · <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a> · <a href="#">API access</a></p>
+</footer>
+
+<script>
+// ── Task data ────────────────────────────────────────────────────────────────
+const TASKS = [
+  {
+    id: 'TSK-001',
+    featured: true,
+    title: 'Pre-purchase inspection',
+    make: 'Renault',
+    model: 'Kangoo ZE 33',
+    year: 2017,
+    region: 'North West',
+    location: 'Birkenhead, Wirral — CH43',
+    fee: 50,
+    type: 'Pre-purchase',
+    requiresBsDongle: true,
+    phase: 2,
+    desc: 'Pre-purchase battery check on a 2017 Renault Kangoo ZE 33. The vehicle is at a private address in Birkenhead. Seller is available weekdays and weekends. Requires CanZE app — Renault ZE support launches in phase 2.',
+    posted: '25 May 2026',
+    requesterId: 'REQ-00001'
+  },
+  {
+    id: 'TSK-002',
+    featured: false,
+    title: 'Fleet six-monthly check',
+    make: 'Nissan',
+    model: 'Leaf 40kWh',
+    year: 2020,
+    region: 'North Wales',
+    location: 'Bangor, Gwynedd — LL57',
+    fee: 45,
+    type: 'Fleet check',
+    requiresBsDongle: true,
+    phase: 1,
+    desc: 'Six-monthly battery health check on a community transport Nissan Leaf 40kWh. Part of an ongoing fleet monitoring programme for a Gwynedd community organisation. Official BS dongle required for fleet authentication.',
+    posted: '24 May 2026',
+    requesterId: 'REQ-00002'
+  },
+  {
+    id: 'TSK-003',
+    featured: false,
+    title: 'Pre-purchase inspection',
+    make: 'Nissan',
+    model: 'Leaf 24kWh',
+    year: 2014,
+    region: 'North West',
+    location: 'Manchester, GM — M14',
+    fee: 40,
+    type: 'Pre-purchase',
+    requiresBsDongle: false,
+    phase: 1,
+    desc: 'Buyer wants an independent battery check before purchasing a 2014 Leaf 24kWh. Seller at a private address in Rusholme. Any approved dongle accepted for this task.',
+    posted: '23 May 2026',
+    requesterId: 'REQ-00003'
+  },
+  {
+    id: 'TSK-004',
+    featured: false,
+    title: 'Pre-purchase inspection',
+    make: 'Nissan',
+    model: 'Leaf 40kWh',
+    year: 2019,
+    region: 'Yorkshire',
+    location: 'Leeds, West Yorkshire — LS6',
+    fee: 40,
+    type: 'Pre-purchase',
+    requiresBsDongle: false,
+    phase: 1,
+    desc: 'Nervous first-time EV buyer wants battery confirmation on a 2019 Leaf 40kWh listed on Facebook Marketplace. Vehicle at seller\'s home address.',
+    posted: '22 May 2026',
+    requesterId: 'REQ-00004'
+  },
+  {
+    id: 'TSK-005',
+    featured: false,
+    title: 'Pre-purchase inspection',
+    make: 'Renault',
+    model: 'Zoe ZE40',
+    year: 2018,
+    region: 'London',
+    location: 'Walthamstow, London — E17',
+    fee: 50,
+    type: 'Pre-purchase',
+    requiresBsDongle: true,
+    phase: 2,
+    desc: 'Pre-purchase check on a 2018 Renault Zoe ZE40 R110. Launching when Renault ZE support goes live in phase 2. Register interest now.',
+    posted: '21 May 2026',
+    requesterId: 'REQ-00005'
+  }
+];
+
+let currentHID = '';
+let currentTask = null;
+let hasBsDongle = false; // toggled when user indicates they have a BS dongle
+
+// ── HID entry ────────────────────────────────────────────────────────────────
+function unlockBoard() {
+  const entry = document.getElementById('hid-entry');
+  entry.style.display = entry.style.display === 'none' ? 'block' : 'none';
+}
+
+function checkHID() {
+  const val = document.getElementById('hid-input').value.trim();
+  const errEl = document.getElementById('hid-error');
+  if (!val.match(/^HV-\d{5}$/)) {
+    errEl.textContent = 'Invalid format. Harvester IDs look like HV-00001.';
+    errEl.style.display = 'block';
+    return;
+  }
+  // In production: validate against API
+  // For demo: accept any valid format
+  currentHID = val;
+  document.getElementById('hid-display').textContent = val;
+  document.getElementById('modal-hid').value = val;
+  document.getElementById('state-locked').style.display = 'none';
+  document.getElementById('state-unlocked').style.display = 'block';
+  renderTasks();
+}
+
+// ── Render tasks ─────────────────────────────────────────────────────────────
+function renderTasks() {
+  const region = document.getElementById('filter-region').value;
+  const vehicle = document.getElementById('filter-vehicle').value;
+  const dongle = document.getElementById('filter-dongle').value;
+
+  let filtered = TASKS.filter(t => {
+    if (region && t.region !== region) return false;
+    if (vehicle === 'Nissan Leaf' && t.make !== 'Nissan') return false;
+    if (dongle === 'any' && t.requiresBsDongle) return false;
+    if (dongle === 'bs' && !t.requiresBsDongle) return false;
+    return true;
+  });
+
+  const featured = filtered.filter(t => t.featured);
+  const available = filtered.filter(t => !t.featured && t.phase === 1);
+  const phase2 = filtered.filter(t => !t.featured && t.phase === 2);
+
+  document.getElementById('task-count').textContent =
+    `${filtered.length} task${filtered.length !== 1 ? 's' : ''} shown`;
+
+  renderTaskList('featured-tasks', featured, 'featured-label');
+  renderTaskList('available-tasks', available, 'available-label');
+  renderTaskList('phase2-tasks', phase2);
+}
+
+function renderTaskList(containerId, tasks, labelId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  if (labelId) {
+    const label = document.getElementById(labelId);
+    if (label) label.style.display = tasks.length ? 'block' : 'none';
+  }
+
+  if (!tasks.length) {
+    container.innerHTML = '';
+    return;
+  }
+
+  container.innerHTML = tasks.map(t => {
+    const canApply = !t.requiresBsDongle || hasBsDongle;
+    const isPhase2 = t.phase === 2;
+
+    const btnClass = isPhase2 ? 'phase2' :
+                     !canApply && t.requiresBsDongle ? 'needs-dongle' : 'available';
+
+    const btnText = isPhase2 ? '🕐 Phase 2' :
+                    !canApply && t.requiresBsDongle ? '⚡ Dongle needed' : 'Apply →';
+
+    return `
+    <div class="task-card ${t.featured ? 'featured' : ''}">
+      <div class="task-card-top">
+        <div class="task-vehicle-badge">
+          <span class="tvb-make">${t.make}</span>
+          <span class="tvb-model">${t.model.replace(t.make + ' ','')}</span>
+          <span class="tvb-year">${t.year}</span>
+        </div>
+        <div class="task-info">
+          <div class="task-title">${t.title}</div>
+          <div class="task-desc">${t.desc}</div>
+          <div class="task-tags">
+            <span class="task-tag tag-location">📍 ${t.location}</span>
+            <span class="task-tag tag-type">${t.type}</span>
+            ${t.requiresBsDongle ? '<span class="task-tag tag-dongle">⚡ BS dongle</span>' : ''}
+            ${isPhase2 ? '<span class="task-tag tag-phase2">Phase 2</span>' : ''}
+          </div>
+        </div>
+        <div class="task-fee">
+          <span class="tf-amount">£${t.fee}</span>
+          <span class="tf-label">on acceptance</span>
+        </div>
+      </div>
+      <div class="task-card-bottom">
+        <div class="tcb-meta">
+          <strong>Task ${t.id}</strong> · Posted ${t.posted}<br>
+          Region: ${t.region}
+        </div>
+        <button class="task-apply-btn ${btnClass}"
+          onclick="${isPhase2 ? 'registerInterest(\'' + t.id + '\')' : canApply ? 'openModal(\'' + t.id + '\')' : 'showDonglePrompt()'}">
+          ${btnText}
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Modal ────────────────────────────────────────────────────────────────────
+function openModal(taskId) {
+  const task = TASKS.find(t => t.id === taskId);
+  if (!task) return;
+  currentTask = task;
+
+  document.getElementById('modal-title').textContent = task.title;
+  document.getElementById('modal-sub').textContent = `${task.make} ${task.model} · ${task.location}`;
+  document.getElementById('modal-fee').textContent = `£${task.fee}`;
+  document.getElementById('modal-hid').value = currentHID;
+  document.getElementById('modal-availability').value = '';
+  document.getElementById('modal-notes').value = '';
+  document.getElementById('modal-overlay').classList.add('active');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('active');
+    currentTask = null;
+  }
+}
+
+function submitApplication() {
+  const availability = document.getElementById('modal-availability').value.trim();
+  if (!availability) { alert('Please enter your availability.'); return; }
+
+  // In production: POST to Apps Script with task ID, HID, availability, notes
+  document.getElementById('modal-overlay').classList.remove('active');
+  alert(`Application submitted for ${currentTask.id}. The requester will contact you by email to confirm arrangements. Thank you.`);
+  currentTask = null;
+}
+
+function showDonglePrompt() {
+  document.getElementById('dongle-upsell').scrollIntoView({behavior:'smooth'});
+  document.getElementById('dongle-upsell').style.outline = '2px solid var(--green-bright)';
+  setTimeout(() => document.getElementById('dongle-upsell').style.outline = '', 2000);
+}
+
+function registerInterest(taskId) {
+  alert(`Registered interest in ${taskId}. We will notify you when Renault ZE support launches in phase 2.`);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+// Check URL params for auto-unlock (e.g. from success page)
+const params = new URLSearchParams(window.location.search);
+const urlHID = params.get('hid');
+if (urlHID && urlHID.match(/^HV-\d{5}$/)) {
+  currentHID = urlHID;
+  document.getElementById('hid-display').textContent = urlHID;
+  document.getElementById('modal-hid').value = urlHID;
+  document.getElementById('state-locked').style.display = 'none';
+  document.getElementById('state-unlocked').style.display = 'block';
+  renderTasks();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Survey — About</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #111110;
+    --ink-mid: #3d3d39;
+    --ink-light: #6e6e68;
+    --ink-faint: #a0a098;
+    --paper: #f5f4ef;
+    --paper-warm: #eeecea;
+    --card: #ffffff;
+    --border: #d8d6d0;
+    --border-light: #e8e6e0;
+    --green: #1a6e42;
+    --green-bright: #21a35e;
+    --green-bg: #eaf4ee;
+    --green-border: #a8d4b8;
+    --amber: #a05a00;
+    --amber-bg: #fdf0e0;
+    --amber-border: #e8c880;
+    --red: #9a1a1a;
+    --red-bg: #fdeaea;
+    --blue: #1a3a7a;
+    --blue-bg: #eaeff8;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  .site-header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo .bs-mark {
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .site-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .site-nav a:hover { color: rgba(255,255,255,0.85); }
+  .site-nav a.active { color: #fff; }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--ink);
+    padding: 3.5rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 28px,
+      rgba(255,255,255,0.02) 28px,
+      rgba(255,255,255,0.02) 29px
+    );
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 1rem;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 2.8rem;
+    font-weight: normal;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 em { font-style: italic; color: rgba(255,255,255,0.55); }
+
+  .hero-sub {
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.45);
+    max-width: 520px;
+    line-height: 1.65;
+  }
+
+  /* ── Page layout ── */
+  .page-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 2rem 5rem;
+  }
+
+  .content-section {
+    padding: 2.5rem 0 0;
+  }
+
+  .section-eyebrow {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 0.5rem;
+  }
+
+  .content-section h2 {
+    font-family: var(--serif);
+    font-size: 1.8rem;
+    font-weight: normal;
+    color: var(--ink);
+    margin-bottom: 0.9rem;
+    line-height: 1.2;
+  }
+
+  .content-section p {
+    color: var(--ink-mid);
+    margin-bottom: 0.9rem;
+    max-width: 620px;
+    line-height: 1.75;
+  }
+
+  .content-section p:last-child { margin-bottom: 0; }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin-top: 2.5rem;
+  }
+
+  /* ── Origin story pullquote ── */
+  .pullquote {
+    border-left: 3px solid var(--green-bright);
+    padding: 1rem 0 1rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .pullquote p {
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 1.5;
+    max-width: 560px;
+    margin: 0;
+  }
+
+  /* ── Principles ── */
+  .principles {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .principle {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid var(--border-light);
+    align-items: flex-start;
+  }
+
+  .principle:last-child { border-bottom: none; }
+
+  .principle-num {
+    font-family: var(--mono);
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--green-bright);
+    flex-shrink: 0;
+    width: 32px;
+    padding-top: 2px;
+  }
+
+  .principle-body { flex: 1; }
+
+  .principle-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+  }
+
+  .principle-desc {
+    font-size: 0.88rem;
+    color: var(--ink-mid);
+    line-height: 1.65;
+    max-width: 560px;
+  }
+
+  /* ── Comparison table ── */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  .compare-table th {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 2px solid var(--border);
+    color: var(--ink-faint);
+    background: var(--paper-warm);
+  }
+
+  .compare-table th.bs-col { color: var(--green); }
+
+  .compare-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+    color: var(--ink-mid);
+    line-height: 1.5;
+  }
+
+  .compare-table td:first-child {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink);
+    font-weight: 500;
+    width: 180px;
+  }
+
+  .compare-table .yes { color: var(--green); font-family: var(--mono); font-size: 11px; }
+  .compare-table .no { color: var(--ink-faint); font-family: var(--mono); font-size: 11px; }
+  .compare-table .partial { color: var(--amber); font-family: var(--mono); font-size: 11px; }
+
+  /* ── Use cases ── */
+  .use-cases {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 1.25rem;
+  }
+
+  .use-case {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+  }
+
+  .use-case .uc-icon { font-size: 1.4rem; margin-bottom: 0.5rem; display: block; }
+
+  .use-case .uc-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-bottom: 0.35rem;
+    text-transform: uppercase;
+  }
+
+  .use-case p {
+    font-size: 0.83rem;
+    color: var(--ink-light);
+    margin: 0;
+    line-height: 1.55;
+  }
+
+  /* ── Timeline ── */
+  .timeline {
+    margin-top: 1.25rem;
+    position: relative;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .tl-entry {
+    display: flex;
+    gap: 1.25rem;
+    padding: 0.75rem 0;
+    position: relative;
+  }
+
+  .tl-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--paper);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .tl-dot.done {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+  }
+
+  .tl-dot.now {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: #fff;
+  }
+
+  .tl-body { flex: 1; padding-top: 6px; }
+
+  .tl-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.04em;
+    margin-bottom: 3px;
+  }
+
+  .tl-desc {
+    font-size: 0.83rem;
+    color: var(--ink-light);
+    line-height: 1.55;
+  }
+
+  /* ── Callouts ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+
+  .callout.info { background: var(--green-bg); border-left: 3px solid var(--green); color: #0a3a1e; }
+  .callout.open { background: var(--paper-warm); border-left: 3px solid var(--ink); color: var(--ink-mid); }
+
+  .callout strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* ── Contact ── */
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 1.25rem;
+  }
+
+  .contact-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+  }
+
+  .contact-card .cc-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+
+  .contact-card .cc-value {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 500;
+  }
+
+  .contact-card p {
+    font-size: 0.82rem;
+    color: var(--ink-light);
+    margin-top: 0.3rem;
+    line-height: 1.5;
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .site-footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+
+  .site-footer a { color: var(--green-bright); text-decoration: none; }
+
+  /* ── Mobile ── */
+  @media (max-width: 600px) {
+    .site-header { padding: 0 1.25rem; }
+    .site-nav { display: none; }
+    .hero { padding: 2rem 1.25rem 2rem; }
+    .hero h1 { font-size: 2rem; }
+    .page-content { padding: 0 1.25rem 4rem; }
+    .use-cases { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .compare-table td:first-child { width: 120px; }
+    .site-footer { padding: 1.25rem; }
+    .compare-table { font-size: 0.78rem; }
+    .compare-table th, .compare-table td { padding: 7px 8px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="site-logo">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Lookup</a>
+    <a href="index.html#browse" onclick="return false;">Browse database</a>
+    <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a>
+    <a href="about.html" class="active">About</a>
+    <a href="bs-data-standard-v1.1.html">Data standard</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">About Battery Survey</div>
+    <h1>The missing data layer<br><em>for electric vehicles</em></h1>
+    <p class="hero-sub">Battery Survey is an open, community-built database of electric vehicle battery health records. Independent, transparent, and free at the point of access.</p>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <!-- Origin -->
+  <div class="content-section">
+    <div class="section-eyebrow">How it started</div>
+    <h2>A van in Birkenhead</h2>
+
+    <p>Battery Survey started with one question: how do you know if a used electric vehicle's battery is actually healthy before you buy it?</p>
+
+    <p>The answer, for most people, was that you didn't. You could look at the dashboard bars, scroll through the seller's description, or pay £150–500 for a mechanic who probably didn't understand the data any better than you did. The diagnostic tools existed — open source apps that read directly from the vehicle's own computer — but no one had built the infrastructure to make them usable by ordinary people at scale.</p>
+
+    <div class="pullquote">
+      <p>"The data exists inside every electric vehicle. It just needs someone to collect it honestly and publish it openly."</p>
+    </div>
+
+    <p>The proof of concept was a 2017 Renault Kangoo ZE in Birkenhead — battery record BS-2026-00001. A £15 Bluetooth dongle, a free app, a screen recording, and a community project in North Wales that needed to buy a reliable electric van without being able to physically inspect it. That first harvest proved the model worked.</p>
+
+    <p>Battery Survey grew from that single record. The goal is simple: every electric vehicle in the UK should have an independent, publicly accessible battery health history — the same way every vehicle has an MOT history.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Principles -->
+  <div class="content-section">
+    <div class="section-eyebrow">What we believe</div>
+    <h2>The principles</h2>
+
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">01</div>
+        <div class="principle-body">
+          <div class="principle-title">The data belongs to the public</div>
+          <div class="principle-desc">Battery health information read from a vehicle's own computer is not proprietary. It belongs to the owner and to anyone with a legitimate reason to understand it. Battery Survey publishes this data openly under a Creative Commons licence. Anyone can download, analyse, or build on it.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">02</div>
+        <div class="principle-body">
+          <div class="principle-title">No record is ever deleted for commercial reasons</div>
+          <div class="principle-desc">A battery in poor condition earns the same record as one in excellent condition. No seller, dealer, or fleet operator can request suppression of a valid test result. Records are only ever voided if they are technically invalid — wrong vehicle, failed connection, submission error. The integrity of the database is unconditional.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">03</div>
+        <div class="principle-body">
+          <div class="principle-title">The methodology is published openly</div>
+          <div class="principle-desc">The Battery Survey data standard is a public document. Every field, every validation rule, every threshold is documented and open to scrutiny. Anyone can challenge a result, propose a change, or audit the process. There is no black box.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">04</div>
+        <div class="principle-body">
+          <div class="principle-title">Community trust is built slowly and carefully</div>
+          <div class="principle-desc">Battery Survey started with one vehicle and one harvester. The database grows through real tests, real harvesters, and real community organisations. We will not claim scale we don't have, accuracy we can't demonstrate, or authority we haven't earned.</div>
+        </div>
+      </div>
+      <div class="principle">
+        <div class="principle-num">05</div>
+        <div class="principle-body">
+          <div class="principle-title">The tools are open source and free</div>
+          <div class="principle-desc">Battery Survey uses CanZE, LeafSpy, and other community-built diagnostic apps — tools that have been validated by thousands of EV owners over years. We don't lock data behind proprietary hardware. A £15 dongle and a free app should give any individual access to the same quality of battery information as a main dealer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- How BS differs -->
+  <div class="content-section">
+    <div class="section-eyebrow">Landscape</div>
+    <h2>How Battery Survey differs</h2>
+    <p>Other services exist in this space. Here is an honest comparison.</p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th class="bs-col">Battery Survey</th>
+          <th>Generational</th>
+          <th>AVILOO</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Who can access data</td>
+          <td>Anyone — public database</td>
+          <td>Dealers only</td>
+          <td>Dealers / fleets only</td>
+        </tr>
+        <tr>
+          <td>Data published openly</td>
+          <td><span class="yes">Yes — CC BY 4.0</span></td>
+          <td><span class="no">No</span></td>
+          <td><span class="no">No</span></td>
+        </tr>
+        <tr>
+          <td>Rapid charge count</td>
+          <td><span class="yes">Yes — in every record</span></td>
+          <td><span class="no">Not published</span></td>
+          <td><span class="no">Not published</span></td>
+        </tr>
+        <tr>
+          <td>BMS manipulation detection</td>
+          <td><span class="yes">Yes — reprogram flags</span></td>
+          <td><span class="no">No</span></td>
+          <td><span class="no">No</span></td>
+        </tr>
+        <tr>
+          <td>MOT history integrated</td>
+          <td><span class="yes">Yes — auto-fetched GOV.UK</span></td>
+          <td><span class="no">No</span></td>
+          <td><span class="no">No</span></td>
+        </tr>
+        <tr>
+          <td>Longitudinal history</td>
+          <td><span class="yes">Yes — six-monthly records</span></td>
+          <td><span class="partial">Point-in-time only</span></td>
+          <td><span class="partial">Point-in-time only</span></td>
+        </tr>
+        <tr>
+          <td>Covers private sellers</td>
+          <td><span class="yes">Yes — primary use case</span></td>
+          <td><span class="no">No</span></td>
+          <td><span class="no">No</span></td>
+        </tr>
+        <tr>
+          <td>Community fleet support</td>
+          <td><span class="yes">Yes — built in</span></td>
+          <td><span class="no">No</span></td>
+          <td><span class="partial">Via fleet API</span></td>
+        </tr>
+        <tr>
+          <td>Hardware cost per test</td>
+          <td><span class="yes">~£0 (dongle owned)</span></td>
+          <td><span class="no">£35+ per test</span></td>
+          <td><span class="no">€35+ per test</span></td>
+        </tr>
+        <tr>
+          <td>Methodology published</td>
+          <td><span class="yes">Yes — fully open</span></td>
+          <td><span class="no">No</span></td>
+          <td><span class="partial">Partial</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout open">
+      <strong>A note on Generational</strong>
+      Generational is a well-funded, professionally run company doing genuinely useful work for the dealer market. Battery Survey is not competing with them in that space. We are building something different — public infrastructure for individual owners, community organisations, and anyone who needs the data but isn't a franchised dealer. These are complementary, not competing.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Who it's for -->
+  <div class="content-section">
+    <div class="section-eyebrow">Users</div>
+    <h2>Who Battery Survey is for</h2>
+
+    <div class="use-cases">
+      <div class="use-case">
+        <span class="uc-icon">🛒</span>
+        <div class="uc-title">Used EV buyers</div>
+        <p>Anyone buying a second-hand electric vehicle who wants independent battery data before committing. The free lookup answers the basic question. The premium record answers the detailed one.</p>
+      </div>
+      <div class="use-case">
+        <span class="uc-icon">🏘️</span>
+        <div class="uc-title">Community transport operators</div>
+        <p>CICs, charities, and council-funded transport schemes operating electric fleets. Regular six-monthly checks provide a documented battery health record for trustees and funders.</p>
+      </div>
+      <div class="use-case">
+        <span class="uc-icon">🛡️</span>
+        <div class="uc-title">Insurers</div>
+        <p>EV insurance is currently priced on age and mileage. Battery Survey provides the actual battery condition data needed for genuine risk-based pricing — updated every six months.</p>
+      </div>
+      <div class="use-case">
+        <span class="uc-icon">🔬</span>
+        <div class="uc-title">Researchers</div>
+        <p>The Battery Survey dataset is open and queryable. Real-world UK EV battery degradation data, including charge history and temperature records, available under CC BY 4.0.</p>
+      </div>
+      <div class="use-case">
+        <span class="uc-icon">💼</span>
+        <div class="uc-title">Small fleet operators</div>
+        <p>Tradespeople, delivery businesses, and small enterprises running electric vans. A DATARUNR certificate at purchase and every six months is a legitimate business expense and responsible fleet management.</p>
+      </div>
+      <div class="use-case">
+        <span class="uc-icon">📋</span>
+        <div class="uc-title">Sellers and dealers</div>
+        <p>Any seller who wants to demonstrate their vehicle's battery health honestly and increase buyer confidence. A Battery Survey record on a listing is free to link and transparent to verify.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Roadmap -->
+  <div class="content-section">
+    <div class="section-eyebrow">Roadmap</div>
+    <h2>Where we are and where we're going</h2>
+
+    <div class="timeline">
+      <div class="tl-entry">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-body">
+          <div class="tl-title">Data standard v1.1 published</div>
+          <div class="tl-desc">Full field specification for Nissan Leaf and Renault ZE vehicles. GOV.UK MOT and DVLA enrichment. Open methodology, CC BY 4.0.</div>
+        </div>
+      </div>
+      <div class="tl-entry">
+        <div class="tl-dot done">✓</div>
+        <div class="tl-body">
+          <div class="tl-title">Harvester manual v1 published</div>
+          <div class="tl-desc">Complete step-by-step guide for Kangoo ZE. Hosted on GitHub Pages. Shareable by URL — no app, no login, no friction.</div>
+        </div>
+      </div>
+      <div class="tl-entry">
+        <div class="tl-dot now">→</div>
+        <div class="tl-body">
+          <div class="tl-title">First harvest — BS-2026-00001</div>
+          <div class="tl-desc">2017 Renault Kangoo ZE, Birkenhead. Pre-purchase inspection for the Criccieth Community Living CIC research vehicle programme.</div>
+        </div>
+      </div>
+      <div class="tl-entry">
+        <div class="tl-dot">Q3</div>
+        <div class="tl-body">
+          <div class="tl-title">Partneriaeth Ogwen fleet pilot</div>
+          <div class="tl-desc">Six-monthly checks on the Dyffryn Caredig electric fleet in Gwynedd — five community transport vehicles. First longitudinal fleet dataset.</div>
+        </div>
+      </div>
+      <div class="tl-entry">
+        <div class="tl-dot">Q3</div>
+        <div class="tl-body">
+          <div class="tl-title">Phase 2 vehicles — Renault ZE range</div>
+          <div class="tl-desc">Zoe ZE40 and Kangoo ZE 22 added to supported vehicle list. Harvester manual extended. CanZE field set for Renault confirmed.</div>
+        </div>
+      </div>
+      <div class="tl-entry">
+        <div class="tl-dot">Q4</div>
+        <div class="tl-body">
+          <div class="tl-title">Public database launch</div>
+          <div class="tl-desc">batterysurvey.info public lookup live. Free grade lookup. Premium 30-day access at £4.99. Notification system for new test alerts.</div>
+        </div>
+      </div>
+      <div class="tl-entry">
+        <div class="tl-dot">2027</div>
+        <div class="tl-body">
+          <div class="tl-title">Phase 3 — VW and Tesla</div>
+          <div class="tl-desc">VW ID.3/ID.4 (pre-2024) and Tesla Model 3/Y (pre-2024) added. Insurer API tier. Fleet management dashboard. Possible decentralised storage.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Open standard -->
+  <div class="content-section">
+    <div class="section-eyebrow">The standard</div>
+    <h2>An open standard, not a product</h2>
+
+    <p>The long-term goal of Battery Survey is not to be a company that sells data. It is to establish a standard — the way the MOT is a standard, or the Land Registry is a standard — that the entire EV ecosystem can rely on.</p>
+
+    <p>The BS Record Format is published openly. Any developer, researcher, or organisation can implement it. Any harvester can submit to it. Any insurer, lender, or fleet manager can query it. The standard belongs to the community, not to Battery Survey Ltd.</p>
+
+    <p>When the dataset has sufficient scale and the methodology has sufficient credibility, the right home for Battery Survey's database is probably not a private company at all — it's a public interest organisation, a cooperative, or a regulated data trust. That conversation is for the future. For now, the work is to build the data.</p>
+
+    <div class="callout info">
+      <strong>Contribute to the standard</strong>
+      The Battery Survey data standard is hosted on GitHub. If you have technical knowledge of EV diagnostics, fleet management, or battery chemistry and want to contribute, open an issue or submit a pull request. The standard improves when more people look at it.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Contact -->
+  <div class="content-section">
+    <div class="section-eyebrow">Get in touch</div>
+    <h2>Contact</h2>
+    <p>Battery Survey is at an early stage. If you want to discuss a fleet pilot, a partnership, a data licence, or anything else, use the details below.</p>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="cc-label">General enquiries</div>
+        <div class="cc-value">hello@batterysurvey.info</div>
+        <p>Questions about the database, the methodology, or the data standard.</p>
+      </div>
+      <div class="contact-card">
+        <div class="cc-label">Fleet and insurer enquiries</div>
+        <div class="cc-value">fleet@batterysurvey.info</div>
+        <p>Community transport operators, insurers, and fleet managers interested in the periodic check service.</p>
+      </div>
+      <div class="contact-card">
+        <div class="cc-label">Harvester enquiries</div>
+        <div class="cc-value">harvesters@batterysurvey.info</div>
+        <p>Questions about joining the harvester network or the onboarding process.</p>
+      </div>
+      <div class="contact-card">
+        <div class="cc-label">Data and API access</div>
+        <div class="cc-value">data@batterysurvey.info</div>
+        <p>Researchers, developers, and organisations wanting bulk data access or API integration.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Data standard v1.1 · <a href="bs-data-standard-v1.1.html">View methodology</a> · <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a> · <a href="#">API access</a></p>
+</footer>
+
+</body>
+</html>

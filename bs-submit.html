@@ -1,0 +1,1551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battery Survey — Submit a Harvest</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #111110;
+    --ink-mid: #3d3d39;
+    --ink-light: #6e6e68;
+    --ink-faint: #a0a098;
+    --paper: #f5f4ef;
+    --paper-warm: #eeecea;
+    --card: #ffffff;
+    --border: #d8d6d0;
+    --border-light: #e8e6e0;
+    --green: #1a6e42;
+    --green-bright: #21a35e;
+    --green-bg: #eaf4ee;
+    --green-border: #a8d4b8;
+    --amber: #a05a00;
+    --amber-bg: #fdf0e0;
+    --amber-border: #e8c880;
+    --red: #9a1a1a;
+    --red-bg: #fdeaea;
+    --red-border: #e8b0b0;
+    --blue: #1a3a7a;
+    --blue-bg: #eaeff8;
+    --mono: 'DM Mono', 'Courier New', monospace;
+    --serif: 'DM Serif Display', Georgia, serif;
+    --radius: 6px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: Georgia, serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── Shared header ── */
+  .site-header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .site-logo {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: #fff;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-logo .bs-mark {
+    background: var(--green-bright);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.12em;
+  }
+
+  .site-nav {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+  }
+
+  .site-nav a {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .site-nav a:hover { color: rgba(255,255,255,0.85); }
+  .site-nav a.active { color: #fff; }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--ink);
+    padding: 2.5rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent, transparent 28px,
+      rgba(255,255,255,0.02) 28px,
+      rgba(255,255,255,0.02) 29px
+    );
+    pointer-events: none;
+  }
+
+  .hero-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-bright);
+    margin-bottom: 0.75rem;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 2.2rem;
+    font-weight: normal;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-sub {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.4);
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 52px;
+    z-index: 50;
+  }
+
+  .progress-inner {
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+
+  .progress-step {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    cursor: pointer;
+  }
+
+  .progress-step:last-child { flex: none; }
+
+  .ps-dot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--card);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-faint);
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .ps-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+
+  .ps-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    margin: 0 8px;
+  }
+
+  .progress-step.active .ps-dot {
+    background: var(--green-bright);
+    border-color: var(--green-bright);
+    color: #fff;
+  }
+
+  .progress-step.active .ps-label { color: var(--ink); }
+
+  .progress-step.done .ps-dot {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: #fff;
+    font-size: 11px;
+  }
+
+  .progress-step.done .ps-label { color: var(--ink-mid); }
+
+  /* ── Main form area ── */
+  .form-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 2rem 2rem 5rem;
+  }
+
+  /* ── Section cards ── */
+  .form-section {
+    display: none;
+    animation: fadeUp 0.25s ease both;
+  }
+
+  .form-section.active { display: block; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .section-card-header {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .sch-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: var(--green-bright);
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    padding: 2px 7px;
+    border-radius: 3px;
+  }
+
+  .sch-title {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+
+  .sch-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-left: auto;
+  }
+
+  .section-card-body {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* ── Form fields ── */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .field-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .field-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .field label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .req-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--red);
+    flex-shrink: 0;
+  }
+
+  .opt-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    width: 100%;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--green-bright);
+    background: var(--card);
+  }
+
+  .field input.error,
+  .field select.error {
+    border-color: var(--red);
+    background: var(--red-bg);
+  }
+
+  .field textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+  .field-hint {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+  }
+
+  .field-hint.warn {
+    color: var(--amber);
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-radius: 4px;
+    padding: 4px 8px;
+  }
+
+  /* ── Upload section ── */
+  .upload-zone {
+    border: 2px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    background: var(--paper);
+    transition: border-color 0.15s, background 0.15s;
+    cursor: pointer;
+  }
+
+  .upload-zone:hover {
+    border-color: var(--green-bright);
+    background: var(--green-bg);
+  }
+
+  .upload-zone.active {
+    border-color: var(--green-bright);
+    background: var(--green-bg);
+  }
+
+  .upload-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+
+  .upload-title {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 0.3rem;
+    letter-spacing: 0.04em;
+  }
+
+  .upload-sub {
+    font-size: 0.82rem;
+    color: var(--ink-faint);
+    margin-bottom: 0.75rem;
+  }
+
+  .upload-btn {
+    display: inline-block;
+    background: var(--green-bright);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    transition: background 0.15s;
+  }
+
+  .upload-btn:hover { background: var(--green); }
+
+  .upload-alt {
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    margin-top: 0.75rem;
+  }
+
+  .upload-complete {
+    display: none;
+    background: var(--green-bg);
+    border: 1px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .upload-complete.shown { display: flex; }
+
+  .upload-complete .uc-icon { font-size: 1.2rem; }
+
+  .upload-complete .uc-text {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green);
+  }
+
+  /* ── Drive link field ── */
+  .drive-field {
+    background: var(--blue-bg);
+    border: 1px solid #b8c8f0;
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+  }
+
+  .drive-field .df-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue);
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .drive-field .df-label .req-dot { background: var(--blue); }
+
+  .drive-field input {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #b8c8f0;
+    border-radius: var(--radius);
+    background: var(--card);
+    color: var(--blue);
+    outline: none;
+    width: 100%;
+    transition: border-color 0.15s;
+  }
+
+  .drive-field input:focus { border-color: var(--blue); }
+
+  .drive-field .df-hint {
+    font-size: 0.78rem;
+    color: var(--blue);
+    opacity: 0.65;
+    margin-top: 0.4rem;
+    line-height: 1.5;
+  }
+
+  /* ── Callout ── */
+  .callout {
+    border-radius: var(--radius);
+    padding: 0.85rem 1.1rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .callout.info { background: var(--green-bg); border-left: 3px solid var(--green); color: #0a3a1e; }
+  .callout.warn { background: var(--amber-bg); border-left: 3px solid var(--amber); color: #5a2a00; }
+
+  .callout strong {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  /* ── Nav buttons ── */
+  .form-nav {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    align-items: center;
+  }
+
+  .btn-back {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-mid);
+    background: none;
+    border: 1px solid var(--border);
+    padding: 0.7rem 1.25rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-back:hover { background: var(--paper-warm); }
+
+  .btn-next {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--ink);
+    border: none;
+    padding: 0.7rem 1.75rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-next:hover { background: #2a2a28; }
+
+  .btn-submit {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--green-bright);
+    border: none;
+    padding: 0.9rem 2rem;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-submit:hover { background: var(--green); }
+
+  .required-note {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  /* ── Review section ── */
+  .review-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .review-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .review-block-header {
+    background: var(--paper-warm);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .rbh-title {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .rbh-edit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    background: none;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  .review-rows { padding: 0.5rem 0; }
+
+  .review-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .review-row:last-child { border-bottom: none; }
+
+  .rr-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .rr-value {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 500;
+    word-break: break-all;
+  }
+
+  .rr-value.empty { color: var(--ink-faint); font-style: italic; font-weight: normal; }
+
+  /* ── Success state ── */
+  .success-state {
+    display: none;
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .success-state.active { display: block; }
+
+  .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+
+  .success-id {
+    font-family: var(--mono);
+    font-size: 1.8rem;
+    font-weight: 500;
+    color: var(--green-bright);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    background: var(--ink);
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: var(--radius);
+  }
+
+  .success-state h2 {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    font-weight: normal;
+    margin: 0.75rem 0 0.5rem;
+  }
+
+  .success-state p {
+    font-size: 0.88rem;
+    color: var(--ink-light);
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .success-next {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .sn-btn {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--radius);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    color: var(--ink-mid);
+    transition: all 0.15s;
+  }
+
+  .sn-btn:hover { background: var(--paper-warm); }
+  .sn-btn.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .sn-btn.primary:hover { background: #2a2a28; }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--ink);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .site-footer p {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: rgba(255,255,255,0.3);
+    margin: 0;
+  }
+
+  .site-footer a { color: var(--green-bright); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .site-header { padding: 0 1.25rem; }
+    .site-nav { display: none; }
+    .hero { padding: 1.75rem 1.25rem; }
+    .hero h1 { font-size: 1.7rem; }
+    .progress-wrap { padding: 0.75rem 1.25rem; }
+    .ps-label { display: none; }
+    .form-wrap { padding: 1.25rem 1.25rem 4rem; }
+    .field-row-2 { grid-template-columns: 1fr; }
+    .field-row-3 { grid-template-columns: 1fr 1fr; }
+    .review-row { grid-template-columns: 1fr; gap: 2px; }
+    .rr-label { font-size: 9px; }
+    .site-footer { padding: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="site-logo">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Lookup</a>
+    <a href="index.html">Browse database</a>
+    <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a>
+    <a href="about.html">About</a>
+    <a href="bs-data-standard-v1.1.html">Data standard</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">MVP — Self-submit · Nissan Leaf only</div>
+    <h1>Submit your<br>battery data</h1>
+    <p class="hero-sub">Submit battery health data from your own Nissan Leaf. Every field becomes a permanent public record. Take your time — accuracy matters more than speed.</p>
+  </div>
+</div>
+
+<!-- Progress bar -->
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <div class="progress-step active" id="step-1" onclick="goStep(1)">
+      <div class="ps-dot">1</div>
+      <span class="ps-label">Harvester</span>
+    </div>
+    <div class="ps-line"></div>
+    <div class="progress-step" id="step-2" onclick="goStep(2)">
+      <div class="ps-dot">2</div>
+      <span class="ps-label">Vehicle</span>
+    </div>
+    <div class="ps-line"></div>
+    <div class="progress-step" id="step-3" onclick="goStep(3)">
+      <div class="ps-dot">3</div>
+      <span class="ps-label">Battery</span>
+    </div>
+    <div class="ps-line"></div>
+    <div class="progress-step" id="step-4" onclick="goStep(4)">
+      <div class="ps-dot">4</div>
+      <span class="ps-label">Charges</span>
+    </div>
+    <div class="ps-line"></div>
+    <div class="progress-step" id="step-5" onclick="goStep(5)">
+      <div class="ps-dot">5</div>
+      <span class="ps-label">Evidence</span>
+    </div>
+    <div class="ps-line"></div>
+    <div class="progress-step" id="step-6" onclick="goStep(6)">
+      <div class="ps-dot">6</div>
+      <span class="ps-label">Review</span>
+    </div>
+  </div>
+</div>
+
+<div class="form-wrap">
+
+  <!-- ── Step 1: Harvester ── -->
+  <div class="form-section active" id="section-1">
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="sch-num">A</span>
+        <span class="sch-title">Your details</span>
+        <span class="sch-note">Not published</span>
+      </div>
+      <div class="section-card-body">
+
+        <div class="callout info">
+          <strong>MVP — own vehicle submissions only</strong>
+          During the Battery Survey MVP stage, submissions are accepted from Nissan Leaf owners submitting data from their own vehicle only. This keeps the process simple and liability-free. Harvester tasks — testing other people's vehicles — will open once you have a completed self-submission on your profile.
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Your name</label>
+            <input type="text" id="harvester_name" placeholder="First and last name">
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Your email</label>
+            <input type="email" id="harvester_email" placeholder="you@email.com">
+            <span class="field-hint">Used to assign your Harvester ID and confirm payment</span>
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Harvester ID (if already assigned)</label>
+            <input type="text" id="harvester_id" placeholder="HV-00001 or leave blank if new">
+            <span class="field-hint">Leave blank on first submission — we will assign one</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Test date</label>
+            <input type="date" id="test_date">
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Purpose of this test</label>
+            <select id="purpose">
+              <option value="">Select</option>
+              <option value="self_submit">Self-submit — my own vehicle</option>
+              <option value="six_monthly">Six-monthly update — my own vehicle</option>
+              <option value="research">Research</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> I confirm this is my own vehicle</label>
+            <select id="ownership_type">
+              <option value="">Select</option>
+              <option value="private_owner">Yes — I am the registered keeper</option>
+              <option value="private_owner_family">Yes — family member's vehicle, I have authority</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <span class="required-note"><span class="req-dot"></span> Required field</span>
+      <button class="btn-next" onclick="nextStep(1)">Vehicle details →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 2: Vehicle ── -->
+  <div class="form-section" id="section-2">
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="sch-num">B</span>
+        <span class="sch-title">Vehicle identity</span>
+      </div>
+      <div class="section-card-body">
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Registration number</label>
+            <input type="text" id="registration" placeholder="BK17ABC"
+              oninput="this.value=this.value.toUpperCase().replace(/\s/g,'')">
+            <span class="field-hint">UK plate, uppercase, no spaces</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> VIN (from LeafSpy screen)</label>
+            <input type="text" id="vin" placeholder="SJNFAAZE0U0000001" maxlength="17"
+              oninput="this.value=this.value.toUpperCase()">
+            <span class="field-hint">17 characters — read from LeafSpy main screen or Settings tab, not from the V5C</span>
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label><span class="req-dot"></span> Make</label>
+            <select id="make" onchange="updateModels()">
+              <option value="">Select</option>
+              <option value="Nissan">Nissan</option>
+              <option value="Renault" disabled style="color:var(--ink-faint);">Renault (coming soon)</option>
+            </select>
+            <span class="field-hint">Renault ZE support coming in phase 2</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Model</label>
+            <select id="model" onchange="updateBattery()">
+              <option value="">Select make first</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Year</label>
+            <select id="year">
+              <option value="">Select</option>
+              <option>2022</option><option>2021</option><option>2020</option>
+              <option>2019</option><option>2018</option><option>2017</option>
+              <option>2016</option><option>2015</option><option>2014</option>
+              <option>2013</option><option>2012</option><option>2011</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Battery capacity (kWh)</label>
+            <select id="battery_kwh">
+              <option value="">Select model first</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Odometer reading</label>
+            <input type="number" id="odometer_km" placeholder="e.g. 21547">
+            <span class="field-hint" id="odo-hint">Enter in km. If dash shows miles, multiply by 1.609</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(1)">← Back</button>
+      <button class="btn-next" onclick="nextStep(2)">Battery data →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 3: Battery ── -->
+  <div class="form-section" id="section-3">
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="sch-num">C</span>
+        <span class="sch-title">Battery measurements</span>
+        <span class="sch-note">Read from app screen</span>
+      </div>
+      <div class="section-card-body">
+
+        <div class="callout warn">
+          <strong>Read these from the screen — do not estimate</strong>
+          All values below must be taken directly from what the app displays. If a value is not visible in the recording, leave it blank and note why in the harvester notes field.
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> SOH % (State of Health)</label>
+            <input type="number" id="soh_percent" step="0.1" min="0" max="100" placeholder="e.g. 84.3">
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> SOH method shown</label>
+            <select id="soh_method">
+              <option value="">Select</option>
+              <option value="single">Single value (Nissan Leaf — LeafSpy SOH%)</option>
+              <option value="energy_avg" disabled style="color:var(--ink-faint);">Energy average — Renault only (coming soon)</option>
+              <option value="available_power" disabled style="color:var(--ink-faint);">Available power — Renault only (coming soon)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field" style="opacity:0.4;pointer-events:none;">
+            <label><span class="opt-dot"></span> SOH secondary % (Renault only — phase 2)</label>
+            <input type="number" id="soh_secondary" step="0.1" min="0" max="100" placeholder="Not applicable — Nissan Leaf" disabled>
+            <span class="field-hint">Only for Renault ZE — not used in MVP stage</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> SOC at test % (how full the battery was)</label>
+            <input type="number" id="soc_at_test" min="0" max="100" placeholder="e.g. 67">
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label><span class="req-dot"></span> Cell delta (mV)</label>
+            <input type="number" id="cell_delta_mv" min="0" placeholder="e.g. 18">
+            <span class="field-hint">Max-Min delta from cell voltages screen</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Cell voltage min (V)</label>
+            <input type="number" id="cell_voltage_min" step="0.001" placeholder="e.g. 3.721">
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Cell voltage max (V)</label>
+            <input type="number" id="cell_voltage_max" step="0.001" placeholder="e.g. 3.739">
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label><span class="opt-dot"></span> Cell voltage avg (V)</label>
+            <input type="number" id="cell_voltage_avg" step="0.001" placeholder="e.g. 3.731">
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Pack voltage (V)</label>
+            <input type="number" id="pack_voltage" step="0.1" placeholder="e.g. 358.2">
+          </div>
+          <div class="field">
+            <label><span class="opt-dot"></span> AHr capacity</label>
+            <input type="number" id="ahr_capacity" step="0.1" placeholder="e.g. 54.3">
+            <span class="field-hint">Leaf: from main screen. Renault: if visible</span>
+          </div>
+        </div>
+
+        <div class="field-row-3">
+          <div class="field">
+            <label><span class="req-dot"></span> Battery temp min (°C)</label>
+            <input type="number" id="battery_temp_min" step="0.5" placeholder="e.g. 16.5">
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Battery temp max (°C)</label>
+            <input type="number" id="battery_temp_max" step="0.5" placeholder="e.g. 19.0">
+          </div>
+          <div class="field">
+            <label><span class="opt-dot"></span> Ambient temp (°C)</label>
+            <input type="number" id="ambient_temp_c" placeholder="e.g. 14">
+            <span class="field-hint">Outside air temp — estimate if needed</span>
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="opt-dot"></span> Hx % (Leaf only)</label>
+            <input type="number" id="hx_percent" step="0.1" placeholder="e.g. 78.4">
+            <span class="field-hint">Internal resistance proxy — Leaf only</span>
+          </div>
+          <div class="field">
+            <label><span class="opt-dot"></span> Weak cell position</label>
+            <input type="text" id="weak_cell_position" placeholder="e.g. R3-C4">
+            <span class="field-hint">Only if one cell is clearly lower than all others by 50mV+</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(2)">← Back</button>
+      <button class="btn-next" onclick="nextStep(3)">Charge history →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 4: Charge & BMS history ── -->
+  <div class="form-section" id="section-4">
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="sch-num">D</span>
+        <span class="sch-title">Charge history</span>
+        <span class="sch-note">Cannot be reset by seller</span>
+      </div>
+      <div class="section-card-body">
+
+        <div class="callout info">
+          <strong>Why this data matters</strong>
+          These counts are stored permanently in the BMS and cannot be reset or manipulated. A vehicle with 600 rapid DC charges tells a different story to one with 60 — at any mileage.
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="req-dot"></span> Rapid DC charge count</label>
+            <input type="number" id="rapid_charge_count" min="0" placeholder="e.g. 47">
+            <span class="field-hint">From app: "QC" on Leaf, rapid charge count on CanZE</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Slow AC charge count</label>
+            <input type="number" id="slow_charge_count" min="0" placeholder="e.g. 612">
+            <span class="field-hint">From app: "L1/L2" on Leaf, slow charge count on CanZE</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section-card" style="opacity:0.45;pointer-events:none;">
+      <div class="section-card-header">
+        <span class="sch-num">E</span>
+        <span class="sch-title">BMS history</span>
+        <span class="sch-note">Renault ZE only — phase 2</span>
+      </div>
+      <div class="section-card-body">
+        <div class="callout warn">
+          <strong>Not applicable during MVP stage</strong>
+          BMS reprogramming history is only available on Renault ZE vehicles via CanZE. This section will be enabled when Renault support launches in phase 2.
+        </div>
+        <div class="field-row-3">
+          <div class="field">
+            <label><span class="opt-dot"></span> BMS reprogram count</label>
+            <input type="number" disabled placeholder="Renault only">
+          </div>
+          <div class="field">
+            <label><span class="opt-dot"></span> Last reprogram date</label>
+            <input type="date" disabled>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Warranty status</label>
+            <select id="warranty_status">
+              <option value="unknown">Unknown / not applicable</option>
+              <option value="active">Active</option>
+              <option value="expired">Expired</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="sch-num">F</span>
+        <span class="sch-title">Diagnostic tool used</span>
+      </div>
+      <div class="section-card-body">
+
+        <div class="field-row-3">
+          <div class="field">
+            <label><span class="req-dot"></span> App name</label>
+            <select id="app_name">
+              <option value="">Select</option>
+              <option value="LeafSpy Pro">LeafSpy Pro</option>
+              <option value="LeafSpy Lite">LeafSpy Lite</option>
+              <option value="CanZE" disabled style="color:var(--ink-faint);">CanZE — phase 2</option>
+              <option value="KangooZE" disabled style="color:var(--ink-faint);">KangooZE — phase 2</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> App version</label>
+            <input type="text" id="app_version" placeholder="e.g. 2.1.7">
+            <span class="field-hint">From app settings or Play Store</span>
+          </div>
+          <div class="field">
+            <label><span class="req-dot"></span> Dongle model</label>
+            <select id="dongle_model">
+              <option value="">Select</option>
+              <option value="Konnwei KW902">Konnwei KW902</option>
+              <option value="ELM327 v1.5 BT">ELM327 v1.5 Bluetooth</option>
+              <option value="OBDLink LX">OBDLink LX</option>
+              <option value="OBDLink MX+">OBDLink MX+</option>
+              <option value="BS-D001" disabled style="color:var(--ink-faint);">Battery Survey official dongle (coming soon)</option>
+              <option value="Other">Other (note in comments)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-row-2">
+          <div class="field">
+            <label><span class="opt-dot"></span> Dongle serial number</label>
+            <input type="text" id="dongle_serial" placeholder="e.g. KW902-A1B2C3 or leave blank">
+            <span class="field-hint">Optional now — required for official Battery Survey dongles. Check the label on your dongle.</span>
+          </div>
+            <label><span class="req-dot"></span> Connection status</label>
+            <select id="connection_status">
+              <option value="">Select</option>
+              <option value="connected">Connected — full data retrieved</option>
+              <option value="partial">Partial — some screens unavailable</option>
+              <option value="failed">Failed — could not connect</option>
+            </select>
+          </div>
+          <div class="field">
+            <label><span class="opt-dot"></span> Harvester notes</label>
+            <textarea id="harvester_notes" placeholder="Anything unusual — warning lights, seller comments, BMS updates mentioned, connection issues. Max 500 characters." maxlength="500"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(3)">← Back</button>
+      <button class="btn-next" onclick="nextStep(4)">Upload evidence →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 5: Evidence ── -->
+  <div class="form-section" id="section-5">
+
+    <div class="section-card">
+      <div class="section-card-header">
+        <span class="sch-num">G</span>
+        <span class="sch-title">Screen recording — required</span>
+      </div>
+      <div class="section-card-body">
+
+        <div class="callout info">
+          <strong>The recording is the evidence</strong>
+          Every submitted record must have a screen recording showing the SOH screen, the cell voltages screen, and the harvester reading the values aloud. Without a valid recording the submission will be rejected. For harvests on other people's vehicles, complete the <a href="bs-consent.html" style="color:var(--green);font-weight:500;">pre-harvest consent form</a> before plugging in.
+        </div>
+
+        <div class="upload-zone" id="upload-zone">
+          <div class="upload-icon">🎬</div>
+          <div class="upload-title">Upload your screen recording to Google Drive</div>
+          <div class="upload-sub">Then paste the shareable link below. The file must be accessible to anyone with the link.</div>
+          <a class="upload-btn" href="DRIVE_UPLOAD_LINK_HERE" target="_blank" rel="noopener">
+            Open upload folder →
+          </a>
+          <div class="upload-alt">
+            Or share via WeTransfer and paste the download link below
+          </div>
+        </div>
+
+        <div class="drive-field">
+          <div class="df-label"><span class="req-dot" style="background:var(--blue)"></span> Paste your video link here</div>
+          <input type="url" id="evidence_url" placeholder="https://drive.google.com/file/d/... or https://wetransfer.com/...">
+          <div class="df-hint">Must be a publicly accessible link — anyone with the link can view. Test the link in a private browser tab before submitting.</div>
+        </div>
+
+        <div class="callout warn">
+          <strong>What the recording must show</strong>
+          Read the registration plate aloud at the start. Navigate to the SOH screen — hold for 10 seconds, read the value aloud. Navigate to cell voltages — hold for 15 seconds, scroll slowly through all cells. Read the Max-Min delta aloud. The recording does not need to be long — 3 to 5 minutes is sufficient.
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="goStep(4)">← Back</button>
+      <button class="btn-next" onclick="nextStep(5)">Review & submit →</button>
+    </div>
+  </div>
+
+  <!-- ── Step 6: Review ── -->
+  <div class="form-section" id="section-6">
+
+    <div class="callout info" style="margin-bottom:1rem;">
+      <strong>Check everything before submitting</strong>
+      Once submitted this record enters the Battery Survey database as a permanent entry. Check every value is correct before pressing Submit.
+    </div>
+
+    <div class="review-grid" id="review-grid">
+      <!-- populated by JS -->
+    </div>
+
+    <div class="form-nav" style="margin-top:1.5rem;">
+      <button class="btn-back" onclick="goStep(5)">← Back</button>
+      <button class="btn-submit" onclick="submitForm()">Submit harvest record →</button>
+    </div>
+  </div>
+
+  <!-- ── Success ── -->
+  <div class="success-state" id="success-state">
+    <div class="success-icon">✅</div>
+    <div class="success-id" id="success-id">BS-2026-00001</div>
+    <h2>Record submitted</h2>
+    <p>Your battery data has been received and is under review. It will be published to the Battery Survey database within 24 hours once verified.</p>
+    <p>Payment of £15 will be confirmed to your email once the record is accepted. You will also receive your Harvester ID — unlocking access to paid Harvester Tasks.</p>
+    <div class="success-next">
+      <a href="index.html" class="sn-btn primary">Look up this vehicle →</a>
+      <a href="bs-tasks.html" class="sn-btn">View harvester tasks</a>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Data standard v1.1 · <a href="bs-data-standard-v1.1.html">View methodology</a> · <a href="harvester.html">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a> · <a href="#">API access</a></p>
+</footer>
+
+<script>
+// ── Model/battery cascades ──
+// MVP: Nissan Leaf only. Renault ZE unlocks in phase 2.
+const MODELS = {
+  Nissan:  ['Leaf 24kWh', 'Leaf 30kWh', 'Leaf 40kWh', 'Leaf 62kWh (e+)']
+  // Renault: ['Kangoo ZE 22', 'Kangoo ZE 33', 'Zoe ZE40', 'Zoe ZE50'] // Phase 2
+};
+
+const BATTERIES = {
+  'Kangoo ZE 22': ['22.0'],
+  'Kangoo ZE 33': ['33.0'],
+  'Zoe ZE40':     ['41.0'],
+  'Zoe ZE50':     ['52.0'],
+  'Leaf 24kWh':   ['24.0'],
+  'Leaf 30kWh':   ['30.0'],
+  'Leaf 40kWh':   ['40.0'],
+  'Leaf 62kWh (e+)': ['62.0']
+};
+
+function updateModels() {
+  const make = document.getElementById('make').value;
+  const modelSel = document.getElementById('model');
+  modelSel.innerHTML = '<option value="">Select model</option>';
+  if (make && MODELS[make]) {
+    MODELS[make].forEach(m => {
+      const o = document.createElement('option');
+      o.value = o.textContent = m;
+      modelSel.appendChild(o);
+    });
+  }
+  document.getElementById('battery_kwh').innerHTML = '<option value="">Select model first</option>';
+}
+
+function updateBattery() {
+  const model = document.getElementById('model').value;
+  const batSel = document.getElementById('battery_kwh');
+  batSel.innerHTML = '';
+  if (model && BATTERIES[model]) {
+    BATTERIES[model].forEach(b => {
+      const o = document.createElement('option');
+      o.value = b;
+      o.textContent = b + ' kWh';
+      batSel.appendChild(o);
+    });
+  }
+}
+
+// ── Step navigation ──
+let currentStep = 1;
+const TOTAL_STEPS = 6;
+
+function goStep(n) {
+  if (n < 1 || n > TOTAL_STEPS) return;
+
+  document.getElementById('section-' + currentStep).classList.remove('active');
+  document.getElementById('step-' + currentStep).classList.remove('active');
+
+  if (n < currentStep) {
+    // going back — just go
+  } else {
+    document.getElementById('step-' + currentStep).classList.add('done');
+    const dot = document.querySelector('#step-' + currentStep + ' .ps-dot');
+    if (dot) dot.textContent = '✓';
+  }
+
+  currentStep = n;
+  document.getElementById('section-' + currentStep).classList.add('active');
+  document.getElementById('step-' + currentStep).classList.add('active');
+  document.getElementById('step-' + currentStep).classList.remove('done');
+
+  // If review step, populate it
+  if (currentStep === 6) populateReview();
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function nextStep(from) {
+  if (!validateStep(from)) return;
+  goStep(from + 1);
+}
+
+// ── Validation ──
+function validateStep(step) {
+  const required = {
+    1: ['test_date', 'purpose', 'ownership_type'],
+    2: ['registration', 'make', 'model', 'year', 'battery_kwh', 'odometer_km'],
+    3: ['soh_percent', 'soh_method', 'soc_at_test', 'cell_delta_mv', 'cell_voltage_min', 'cell_voltage_max', 'pack_voltage', 'battery_temp_min', 'battery_temp_max'],
+    4: ['rapid_charge_count', 'slow_charge_count', 'warranty_status', 'app_name', 'app_version', 'dongle_model', 'connection_status'],
+    5: ['evidence_url']
+  };
+
+  if (!required[step]) return true;
+  let valid = true;
+
+  required[step].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.remove('error');
+    if (!el.value.trim()) {
+      el.classList.add('error');
+      valid = false;
+    }
+  });
+
+  if (!valid) {
+    const firstError = document.querySelector('#section-' + step + ' .error');
+    if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  return valid;
+}
+
+// ── Review population ──
+function val(id) {
+  const el = document.getElementById(id);
+  if (!el) return '—';
+  const v = el.value.trim();
+  if (!v) return '—';
+  if (el.tagName === 'SELECT') {
+    const opt = el.options[el.selectedIndex];
+    return opt ? opt.text : v;
+  }
+  return v;
+}
+
+function populateReview() {
+  const blocks = [
+    {
+      title: 'A — Harvester & purpose',
+      rows: [
+        ['Harvester ID / Name', val('harvester_id') !== '—' ? val('harvester_id') : val('harvester_name')],
+        ['Test date', val('test_date')],
+        ['Purpose', val('purpose')],
+        ['Ownership type', val('ownership_type')]
+      ]
+    },
+    {
+      title: 'B — Vehicle identity',
+      rows: [
+        ['Registration', val('registration')],
+        ['VIN (from BMS)', val('vin')],
+        ['Make / Model / Year', val('make') + ' ' + val('model') + ' ' + val('year')],
+        ['Battery / Odometer', val('battery_kwh') + ' kWh · ' + val('odometer_km') + ' km']
+      ]
+    },
+    {
+      title: 'C — Battery measurements',
+      rows: [
+        ['SOH %', val('soh_percent') + '% (' + val('soh_method') + ')'],
+        ['SOH secondary', val('soh_secondary') !== '—' ? val('soh_secondary') + '%' : '—'],
+        ['SOC at test', val('soc_at_test') + '%'],
+        ['Cell delta', val('cell_delta_mv') + ' mV'],
+        ['Cell min / max', val('cell_voltage_min') + ' V / ' + val('cell_voltage_max') + ' V'],
+        ['Pack voltage', val('pack_voltage') + ' V'],
+        ['Battery temp min / max', val('battery_temp_min') + '°C / ' + val('battery_temp_max') + '°C'],
+        ['AHr / Hx', val('ahr_capacity') + ' AHr · Hx ' + val('hx_percent') + '%']
+      ]
+    },
+    {
+      title: 'D+E — Charge & BMS history',
+      rows: [
+        ['Rapid DC charges', val('rapid_charge_count')],
+        ['Slow AC charges', val('slow_charge_count')],
+        ['BMS reprograms', val('bms_reprogram_count')],
+        ['Last reprogram', val('bms_reprogram_last_date')],
+        ['Warranty status', val('warranty_status')]
+      ]
+    },
+    {
+      title: 'F — Diagnostic tool',
+      rows: [
+        ['App', val('app_name') + ' v' + val('app_version')],
+        ['Dongle', val('dongle_model')],
+        ['Connection', val('connection_status')],
+        ['Notes', val('harvester_notes')]
+      ]
+    },
+    {
+      title: 'G — Evidence',
+      rows: [
+        ['Video URL', val('evidence_url')]
+      ]
+    }
+  ];
+
+  const grid = document.getElementById('review-grid');
+  grid.innerHTML = blocks.map((block, bi) => `
+    <div class="review-block">
+      <div class="review-block-header">
+        <span class="rbh-title">${block.title}</span>
+        <button class="rbh-edit" onclick="goStep(${bi + 1})">Edit</button>
+      </div>
+      <div class="review-rows">
+        ${block.rows.map(([label, value]) => `
+          <div class="review-row">
+            <span class="rr-label">${label}</span>
+            <span class="rr-value ${value === '—' ? 'empty' : ''}">${value}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Submit ──
+let recordCounter = 1;
+
+function submitForm() {
+  // In production: POST JSON to backend API / Google Apps Script endpoint
+  // For MVP: data also flows to Google Sheet via Apps Script
+
+  const year = new Date().getFullYear();
+  const id = 'BS-' + year + '-' + String(recordCounter).padStart(5, '0');
+
+  document.getElementById('success-id').textContent = id;
+
+  // Hide form sections, show success
+  document.querySelector('.progress-wrap').style.display = 'none';
+  document.getElementById('section-6').classList.remove('active');
+  document.getElementById('success-state').classList.add('active');
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

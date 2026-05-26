@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Harvester — Battery Survey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink: #0b0e0d;
+      --surface: #131714;
+      --surface2: #1a1f1d;
+      --border: #232a27;
+      --border2: #2e3733;
+      --text: #eef2ef;
+      --text2: #9aa89e;
+      --text3: #5e6e68;
+      --green: #1c9c5e;
+      --green-bright: #21a35e;
+      --green-bg: #e6f4ee;
+      --amber: #c07c1a;
+      --amber-bg: #fdf3e0;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --mono: 'DM Mono', monospace;
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    body { background: var(--ink); color: var(--text); font-family: var(--mono); font-size: 15px; line-height: 1.6; }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(11,14,13,0.92); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .site-logo { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: var(--text); font-size: 13px; font-weight: 500; letter-spacing: 0.04em; }
+    .bs-mark { background: var(--green); color: #fff; font-size: 10px; font-weight: 500; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.08em; }
+    .site-nav { display: flex; gap: 0.25rem; }
+    .site-nav a { font-size: 12px; color: var(--text2); text-decoration: none; padding: 0.35rem 0.75rem; border-radius: var(--radius); transition: color 0.15s, background 0.15s; letter-spacing: 0.03em; }
+    .site-nav a:hover, .site-nav a.active { color: var(--text); background: var(--surface2); }
+
+    /* ── Hero ── */
+    .hero { padding: 5rem 2rem 4rem; max-width: 860px; margin: 0 auto; }
+    .hero-label { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-bright); margin-bottom: 1.5rem; }
+    .hero h1 { font-family: var(--serif); font-size: clamp(2.4rem,5vw,3.6rem); font-weight: normal; line-height: 1.1; color: var(--text); margin-bottom: 1.25rem; }
+    .hero h1 em { font-style: italic; color: var(--green-bright); }
+    .hero-sub { font-size: 0.95rem; color: var(--text2); max-width: 560px; margin-bottom: 2rem; line-height: 1.7; }
+    .hero-stats { display: flex; gap: 3rem; }
+    .hero-stat { display: flex; flex-direction: column; gap: 3px; }
+    .hs-value { font-family: var(--serif); font-size: 2rem; color: var(--text); }
+    .hs-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); }
+
+    /* ── Content ── */
+    .page-content { max-width: 860px; margin: 0 auto; padding: 0 2rem 6rem; }
+    .content-section { padding: 3rem 0; }
+    .section-eyebrow { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-bright); margin-bottom: 0.75rem; }
+    h2 { font-family: var(--serif); font-size: 2rem; font-weight: normal; color: var(--text); margin-bottom: 1rem; }
+    p { font-size: 0.9rem; color: var(--text2); line-height: 1.75; margin-bottom: 0.75rem; }
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    /* ── What you need ── */
+    .need-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+    .need-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+    .need-card.required { border-color: var(--green); }
+    .nc-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem; }
+    .nc-tag.req { color: var(--green-bright); }
+    .nc-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem; }
+    .nc-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.65; }
+
+    /* ── Dongle card ── */
+    .dongle-card { display: flex; align-items: flex-start; gap: 1.25rem; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 1.5rem; margin-top: 1.5rem; }
+    .dc-icon { font-size: 2rem; flex-shrink: 0; }
+    .dc-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 0.5rem; }
+    .dongle-btn { display: inline-block; margin-top: 0.75rem; margin-right: 0.75rem; font-size: 12px; font-family: var(--mono); letter-spacing: 0.06em; color: var(--green-bright); text-decoration: none; border: 1px solid var(--green); border-radius: var(--radius); padding: 0.4rem 0.85rem; transition: background 0.15s; }
+    .dongle-btn:hover { background: rgba(33,163,94,0.1); }
+    .dongle-price { font-size: 12px; color: var(--text3); }
+
+    /* ── App grid ── */
+    .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem; }
+    .app-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; }
+    .ac-header { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .ac-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .ac-name { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+    .ac-vehicle { font-size: 11px; color: var(--green-bright); letter-spacing: 0.03em; }
+    .app-btn { display: inline-block; margin-top: 0.75rem; font-size: 12px; font-family: var(--mono); letter-spacing: 0.06em; color: var(--green-bright); text-decoration: none; border: 1px solid var(--green); border-radius: var(--radius); padding: 0.4rem 0.85rem; }
+
+    /* ── Process steps ── */
+    .step-list { margin-top: 1.5rem; }
+    .step { display: flex; gap: 1.25rem; padding: 1.25rem 0; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-num { flex-shrink: 0; width: 2rem; height: 2rem; border: 1px solid var(--border2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text3); }
+    .step-body { flex: 1; }
+    .step-title { font-size: 0.9rem; font-weight: 500; color: var(--text); margin-bottom: 0.35rem; }
+    .step-tag { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.35rem; }
+    .step-tag.once { color: var(--green-bright); }
+
+    /* ── Pay card ── */
+    .pay-card { display: grid; grid-template-columns: auto 1fr; gap: 2rem; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 1.75rem; margin-top: 1.25rem; align-items: start; }
+    .pc-amount { font-family: var(--serif); font-size: 3rem; color: var(--green-bright); line-height: 1; }
+    .pc-label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-top: 0.35rem; }
+    .pc-notes { font-size: 0.88rem; color: var(--text2); line-height: 1.7; }
+    .pc-notes strong { display: block; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 0.4rem; }
+
+    /* ── Callouts ── */
+    .callout { border-radius: var(--radius); padding: 1rem 1.25rem; margin-top: 1rem; font-size: 0.88rem; line-height: 1.6; }
+    .callout.info { background: var(--green-bg); border-left: 3px solid var(--green); color: #0a3a1e; }
+    .callout.warn { background: var(--amber-bg); border-left: 3px solid var(--amber); color: #5a2a00; }
+    .callout strong { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+
+    /* ── FAQ ── */
+    .faq-list { margin-top: 1.25rem; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .faq-item { border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-q { width: 100%; text-align: left; background: none; border: none; cursor: pointer; padding: 1rem 1.25rem; font-family: var(--mono); font-size: 0.875rem; color: var(--text); display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .faq-q:hover { background: var(--surface); }
+    .faq-toggle { flex-shrink: 0; font-size: 1.25rem; color: var(--text3); transition: transform 0.2s; }
+    .faq-a { display: none; padding: 0 1.25rem 1rem; font-size: 0.85rem; color: var(--text2); line-height: 1.75; }
+    .faq-item.open .faq-a { display: block; }
+    .faq-item.open .faq-toggle { transform: rotate(45deg); }
+
+    /* ── Signup ── */
+    .signup-card { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); padding: 2rem; margin-top: 1.25rem; }
+    .signup-card h3 { font-family: var(--serif); font-size: 1.4rem; font-weight: normal; margin-bottom: 0.35rem; }
+    .sc-sub { font-size: 0.85rem; color: var(--text2); margin-bottom: 1.5rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-field label { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); }
+    .form-field input, .form-field select { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 0.65rem 0.85rem; font-family: var(--mono); font-size: 13px; color: var(--text); outline: none; transition: border-color 0.15s; }
+    .form-field input:focus, .form-field select:focus { border-color: var(--green); }
+    .form-field select option { background: var(--surface2); }
+    .form-submit { width: 100%; background: var(--green); color: #fff; border: none; padding: 0.85rem; font-family: var(--mono); font-size: 13px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; border-radius: var(--radius); cursor: pointer; margin-top: 0.5rem; }
+    .form-submit:hover { background: #18875a; }
+    .form-consent { font-size: 0.75rem; color: rgba(255,255,255,0.25); margin-top: 0.6rem; line-height: 1.5; text-align: center; }
+    .form-success { display: none; text-align: center; padding: 2rem; }
+    .form-success h4 { font-family: var(--serif); font-size: 1.3rem; font-weight: normal; color: var(--text); margin-bottom: 0.5rem; }
+    .form-success p { font-size: 0.88rem; color: var(--text2); max-width: 400px; margin: 0 auto; }
+
+    /* ── Footer ── */
+    .site-footer { background: var(--ink); padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; border-top: 1px solid var(--border); }
+    .site-footer p { font-family: var(--mono); font-size: 10px; letter-spacing: 0.08em; color: rgba(255,255,255,0.3); margin: 0; }
+    .site-footer a { color: var(--green-bright); text-decoration: none; }
+
+    /* ── Mobile ── */
+    @media (max-width: 600px) {
+      .site-header { padding: 0 1.25rem; }
+      .site-nav { display: none; }
+      .hero { padding: 2rem 1.25rem 2rem; }
+      .hero h1 { font-size: 2rem; }
+      .hero-stats { gap: 1.5rem; }
+      .page-content { padding: 0 1.25rem 4rem; }
+      .need-grid { grid-template-columns: 1fr; }
+      .app-grid { grid-template-columns: 1fr; }
+      .pay-card { grid-template-columns: 1fr; gap: 1rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .site-footer { padding: 1.25rem; }
+      .dongle-card { flex-direction: column; gap: 0.75rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <a href="index.html" class="site-logo">
+    <span class="bs-mark">BS</span>
+    Battery Survey
+  </a>
+  <nav class="site-nav">
+    <a href="index.html">Lookup</a>
+    <a href="index.html#browse" onclick="return false;">Browse database</a>
+    <a href="harvester.html" class="active">Become a harvester</a>
+    <a href="bs-tasks.html">Tasks</a>
+    <a href="about.html">About</a>
+    <a href="bs-data-standard-v1.1.html">Data standard</a>
+  </nav>
+</header>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">MVP — Nissan Leaf owners only</div>
+    <h1>Submit your Leaf.<br><em>Unlock the network.</em></h1>
+    <p class="hero-sub">Own a Nissan Leaf and a compatible OBD dongle? You already have everything you need. Submit your own battery data, earn a £15 reward, and unlock access to paid Harvester Tasks.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><span class="hs-value">£15</span><span class="hs-label">Self-submit reward</span></div>
+      <div class="hero-stat"><span class="hs-value">~20 min</span><span class="hs-label">At your own vehicle</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <div class="content-section">
+    <div class="section-eyebrow">The role</div>
+    <h2>What a harvester actually does</h2>
+    <p>A harvester collects standardised battery health data from a supported electric vehicle using a free diagnostic app and a small Bluetooth dongle. The data goes into the Battery Survey database — a permanent, public, openly licensed record that anyone can look up.</p>
+    <p>During the MVP stage, all submissions come from owners testing their own Nissan Leaf. You plug in the dongle, screen-record the key Battery Management System screens in LeafSpy Pro, and submit the data through the Battery Survey form. No travel, no strangers' cars, no complications.</p>
+  </div>
+
+  <hr class="divider">
+
+  <!-- What you need -->
+  <div class="content-section">
+    <div class="section-eyebrow">Requirements</div>
+    <h2>What you need to get started</h2>
+    <p>The barrier to entry is deliberately low. If you own a Nissan Leaf and have an Android phone, you are most of the way there already.</p>
+
+    <div class="need-grid">
+      <div class="need-card required">
+        <div class="nc-tag req">Required</div>
+        <div class="nc-title">Nissan Leaf owner</div>
+        <div class="nc-desc">Any Leaf from 2011 to 2022 — 24, 30, 40, or 62 kWh battery. The vehicle must be registered in the UK. The submission is for your own car.</div>
+      </div>
+      <div class="need-card required">
+        <div class="nc-tag req">Required</div>
+        <div class="nc-title">Android phone</div>
+        <div class="nc-desc">Android 8 or later. LeafSpy Pro communicates with the OBD dongle via Bluetooth. iOS is not supported at MVP stage.</div>
+      </div>
+      <div class="need-card required">
+        <div class="nc-tag req">Required</div>
+        <div class="nc-title">Compatible OBD dongle</div>
+        <div class="nc-desc">ELM327 v1.5 Bluetooth. The Konnwei KW902 is the recommended dongle and costs around £10–15. Details below.</div>
+      </div>
+      <div class="need-card required">
+        <div class="nc-tag req">Required</div>
+        <div class="nc-title">Comfortable on camera</div>
+        <div class="nc-desc">You'll screen-record the LeafSpy screens while reading values aloud. The recording is your evidence and your content — the TikTok angle is real.</div>
+      </div>
+      <div class="need-card">
+        <div class="nc-tag">Helpful</div>
+        <div class="nc-title">Renault ZE owner</div>
+        <div class="nc-desc">Renault Zoe and Kangoo ZE support is in phase 2. Register your interest and you'll be first to know when it opens.</div>
+      </div>
+      <div class="need-card">
+        <div class="nc-tag">Phase 2</div>
+        <div class="nc-title">Ability to travel locally</div>
+        <div class="nc-desc">Once your self-submit record is accepted, you can take on paid harvest tasks — testing other people's vehicles at their location, starting at £50.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Kit section -->
+  <div class="content-section">
+    <div class="section-eyebrow">Your kit</div>
+    <h2>The hardware — £10–15, once</h2>
+    <p>You need one dongle. The Konnwei KW902 is the Battery Survey recommended device — ELM327 v1.5 protocol, Bluetooth 3.0, Android compatible. Confirmed working with LeafSpy Pro across all Leaf variants from 2011 to 2022. No proprietary app lock-in — connects directly to LeafSpy.</p>
+
+    <div class="dongle-card">
+      <div class="dc-icon">🔌</div>
+      <div>
+        <div class="dc-title">Konnwei KW902 — Bluetooth OBD2</div>
+        <p>ELM327 v1.5 protocol, Bluetooth 3.0, Android compatible. Confirmed working with LeafSpy Pro across all Leaf variants from 2011 to 2022. No proprietary app lock-in — connects directly to LeafSpy.</p>
+        <a class="dongle-btn" href="https://www.amazon.co.uk/s?k=Konnwei+KW902" target="_blank" rel="noopener">Find on Amazon →</a>
+        <span class="dongle-price">approx. £10–15</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Apps -->
+  <div class="content-section">
+    <div class="section-eyebrow">Diagnostic app</div>
+    <h2>The software — £16 once</h2>
+    <p>Battery Survey MVP uses LeafSpy Pro — the most trusted Nissan Leaf diagnostic tool in the community, with eight years of validation behind it. One purchase, works on every Leaf from 2011 to 2022.</p>
+
+    <div class="app-grid" style="grid-template-columns:1fr;">
+      <div class="app-card">
+        <div class="ac-header">
+          <div class="ac-icon">🍃</div>
+          <div>
+            <div class="ac-name">LeafSpy Pro</div>
+            <div class="ac-vehicle">Nissan Leaf — all variants 2011 to 2022</div>
+          </div>
+        </div>
+        <p>£16 one-off purchase on the Play Store. Reads every Battery Survey required field — SOH, cell voltages, AHr, Hx, charge counts, temperatures, VIN, pack voltage. The screens you need are clearly labelled. The screen-recording is your evidence submission.</p>
+        <a class="app-btn" href="https://play.google.com/store/apps/details?id=com.Turbo3.Leaf_Spy_Pro" target="_blank" rel="noopener">View on Play Store →</a>
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:1.25rem;">
+      <strong>Phase 2 — Renault ZE support</strong>
+      CanZE (free, open source) covers the Renault Zoe ZE40 and Kangoo ZE. It is not part of the MVP but will be supported in phase 2. If you own a ZE, register below and you'll be contacted when Renault submissions open.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Process -->
+  <div class="content-section">
+    <div class="section-eyebrow">Process</div>
+    <h2>How a self-submit works</h2>
+    <p>Five steps from dongle to reward. Steps 2 to 5 take around 20 minutes at your vehicle.</p>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-tag once">Once only</div>
+          <div class="step-title">Register and pair your dongle</div>
+          <p>Submit your harvester registration below. You'll receive onboarding instructions and a dongle pairing guide by email.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-tag">Each harvest</div>
+          <div class="step-title">Plug in the dongle and start recording</div>
+          <p>With the vehicle in ready mode and stationary, plug the KW902 into the OBD port (under the steering column). Open LeafSpy Pro and wait for the connection. Start your screen recording.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-tag">Each harvest</div>
+          <div class="step-title">Read the battery screens</div>
+          <p>Navigate to the Battery screen, the Cell Detail screen, and the History screen. Read each key value aloud on camera — SOH percentage, cell delta, rapid charge count. The recording is your evidence.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-tag">Each harvest</div>
+          <div class="step-title">Submit the data</div>
+          <p>Fill in the Battery Survey submission form at <a href="bs-submit.html" style="color:var(--green-bright);">bs-submit</a>. Enter the values from the app, upload the screen recording, and confirm submission. You'll receive a reference number by return.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-tag">Each harvest</div>
+          <div class="step-title">Record published — reward paid</div>
+          <p>The Battery Survey team reviews the submission within 24 hours. If the data passes quality checks, the record is published and your £15 reward is paid by bank transfer. The record is permanent and publicly accessible at batterysurvey.info.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Pay -->
+  <div class="content-section">
+    <div class="section-eyebrow">MVP reward</div>
+    <h2>Your vehicle. Your reward.</h2>
+
+    <div class="pay-card">
+      <div>
+        <div class="pc-amount">£15</div>
+        <div class="pc-label">Reward</div>
+      </div>
+      <div class="pc-notes">
+        <strong>How it works</strong>
+        Submit battery health data from your own Nissan Leaf using LeafSpy Pro and a compatible dongle. No travel, no strangers' vehicles. Your record is verified, published, and you receive a £15 reward. That is the entire MVP proposition.
+      </div>
+    </div>
+
+    <div class="callout info" style="margin-top:1.25rem;">
+      <strong>What happens after your first submission</strong>
+      Once your self-submit record is accepted you receive a Harvester ID. That ID unlocks access to the Harvester Tasks board — paid one-off jobs testing other vehicles, starting at £50. Rewards are paid on submission acceptance — not on what the data shows. A battery in poor condition earns exactly the same as one in excellent condition.
+    </div>
+
+    <div class="callout info" style="margin-top:0.75rem;">
+      <strong>Building your reputation</strong>
+      Harvesters build a profile over time. Consistent, complete, reliable submissions earn a higher reputation score. Higher-reputation harvesters get priority allocation of paid harvest requests as volume grows. There is no ceiling — if you're good at this and available, you can do as many harvests as come your way.
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- FAQ -->
+  <div class="content-section">
+    <div class="section-eyebrow">Questions</div>
+    <h2>Frequently asked</h2>
+
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I need to know anything about electric vehicles?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">No. The harvester manual tells you exactly what to do at each step. You're following a documented process, not diagnosing a vehicle. If something unexpected happens — the app won't connect, a warning light is on — you note it and report it. You're never expected to interpret the data yourself.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What if something goes wrong at the vehicle?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">The most common issue is the dongle taking longer to connect than expected — this is a dongle compatibility issue, not a vehicle problem. If you can't connect after three attempts, record a video of the attempt anyway, note what happened, and submit. A failed connection is still a valid submission and your reward still applies. You are not responsible for the vehicle and cannot damage it by plugging in a passive OBD dongle.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Do I need to drive the vehicle?
+          <span class="faq-toggle">+</span>
+        </button>
+        <div class="faq-a">No. All Battery Survey tests are conducted with the vehicle stationary, ignition in ready mode. You never need to drive it.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Can I submit more than once — for example every six months?<span class="faq-toggle">+</span></button>
+        <div class="faq-a">Yes, and it is encouraged. A six-monthly record builds a longitudinal history of your battery's health over time. Each submission earns a £15 reward. The database becomes more valuable the more data points it contains for each vehicle.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Is this treated as self-employment income?<span class="faq-toggle">+</span></button>
+        <div class="faq-a">Yes. Harvest rewards are paid to you as a self-employed individual. If you earn above the HMRC trading allowance (currently £1,000 per year), you will need to declare the income. Most casual harvesters will be well under the threshold.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">I own a Renault Zoe or Kangoo ZE — can I submit?<span class="faq-toggle">+</span></button>
+        <div class="faq-a">Not yet during the MVP stage. Renault ZE support — covering the Zoe ZE40 and Kangoo ZE 22 and 33 — launches in phase 2. Register your interest in the form below and you will be notified as soon as submissions open for your vehicle.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="content-section">
+    <div class="section-eyebrow">Register</div>
+    <h2>Register your interest</h2>
+    <p>Tell us about yourself and your vehicle. We will be in touch with next steps and your first submission instructions.</p>
+
+    <div class="signup-card">
+      <h3>Harvester registration</h3>
+      <p class="sc-sub">Whether you have a Leaf ready to submit right now, or a Renault ZE waiting for phase 2, register here and we will make sure you are first to know.</p>
+
+      <div id="signup-form">
+        <div class="form-row">
+          <div class="form-field"><label>Your name</label><input type="text" id="f-name" placeholder="First and last name"></div>
+          <div class="form-field"><label>Email address</label><input type="email" id="f-email" placeholder="you@email.com"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label>Town / city</label><input type="text" id="f-location" placeholder="e.g. Manchester"></div>
+          <div class="form-field">
+            <label>Your vehicle</label>
+            <select id="f-vehicle">
+              <option value="">Select vehicle</option>
+              <option value="leaf-24">Nissan Leaf 24 kWh (2011–2017)</option>
+              <option value="leaf-30">Nissan Leaf 30 kWh (2016–2017)</option>
+              <option value="leaf-40">Nissan Leaf 40 kWh (2018–2021)</option>
+              <option value="leaf-62">Nissan Leaf 62 kWh (2019–2022)</option>
+              <option value="zoe-phase2">Renault Zoe ZE40 — interested in phase 2</option>
+              <option value="kangoo-phase2">Kangoo ZE — interested in phase 2</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-field"><label>OBD dongle (if you have one)</label><input type="text" id="f-dongle" placeholder="e.g. Konnwei KW902, or leave blank"></div>
+          <div class="form-field"><label>How did you hear about us?</label><input type="text" id="f-source" placeholder="SpeakEV, social media, etc."></div>
+        </div>
+        <button class="form-submit" onclick="submitForm()">Register interest</button>
+        <p class="form-consent">Your details are used only to contact you about Battery Survey. We do not share your information with third parties.</p>
+      </div>
+
+      <div class="form-success" id="signup-success">
+        <h4>Registration received.</h4>
+        <p>We'll be in touch with your onboarding instructions and first submission guide. Welcome to the network.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="site-footer">
+  <p>Battery Survey · <a href="index.html">batterysurvey.info</a> · Open data · CC BY 4.0</p>
+  <p>Data standard v1.1 · <a href="bs-data-standard-v1.1.html">View standard</a> · <a href="harvester.html">Become a harvester</a> · <a href="about.html">About</a></p>
+</footer>
+
+<script>
+function toggleFaq(btn) {
+  const item = btn.parentElement;
+  item.classList.toggle('open');
+}
+
+function submitForm() {
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  if (!name || !email) { alert('Please enter your name and email address.'); return; }
+  document.getElementById('signup-form').style.display = 'none';
+  document.getElementById('signup-success').style.display = 'block';
+}
+</script>
+
+</body>
+</html>

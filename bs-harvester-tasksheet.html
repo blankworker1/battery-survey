@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Battery Survey — Harvester Task Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --surface: #f5f7f5;
+      --border: #e0e6e2;
+      --border2: #c8d4ce;
+      --text: #111815;
+      --text2: #3d524a;
+      --text3: #7a9288;
+      --green: #1a8f55;
+      --green-bright: #19844f;
+      --green-bg: #eaf5f0;
+      --green-dark: #0e5c35;
+      --amber: #b86e10;
+      --amber-bg: #fdf3e0;
+      --red: #b03030;
+      --red-bg: #fdf0ee;
+      --sans: 'Inter', system-ui, sans-serif;
+      --serif: 'DM Serif Display', Georgia, serif;
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+
+    html { font-size: 17px; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 4px;
+      background: var(--green); width: 0%;
+      transition: width 0.15s; z-index: 200;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--green-dark);
+      padding: 1.25rem 1.25rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .bs-mark {
+      background: #fff;
+      color: var(--green-dark);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.06em;
+    }
+    .brand-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.75);
+      letter-spacing: 0.04em;
+    }
+    .header-title {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: normal;
+      color: #fff;
+      line-height: 1.15;
+      margin-bottom: 0.6rem;
+    }
+    .header-title em {
+      font-style: italic;
+      color: #7fe8b4;
+    }
+    .header-meta {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .meta-chip {
+      font-size: 12px;
+      font-weight: 500;
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.8);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── Step nav ── */
+    .step-nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.25rem;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .step-nav::-webkit-scrollbar { display: none; }
+    .step-nav a {
+      flex-shrink: 0;
+      padding: 0.75rem 1rem;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text3);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .step-nav a:hover {
+      color: var(--green);
+      border-bottom-color: var(--green);
+    }
+
+    /* ── Content ── */
+    .page-content {
+      padding: 0 0 4rem;
+    }
+
+    /* ── Section ── */
+    .section {
+      padding: 1.5rem 1.25rem 2rem;
+      border-bottom: 6px solid var(--surface);
+    }
+    .section:last-child { border-bottom: none; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .step-badge {
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--green);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .section-title-wrap { flex: 1; }
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 1px;
+    }
+    h2 {
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: normal;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    p {
+      font-size: 0.95rem;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 0.75rem;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    /* ── Checklist ── */
+    .checklist {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.9rem 1rem;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color 0.15s, background 0.15s;
+      min-height: 56px;
+    }
+    .check-item:active { background: #eaf5f0; }
+    .check-item.checked {
+      border-color: var(--green);
+      background: var(--green-bg);
+    }
+    .check-box {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border: 2px solid var(--border2);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: #fff;
+      margin-top: 1px;
+      background: #fff;
+      transition: all 0.15s;
+    }
+    .check-item.checked .check-box {
+      background: var(--green);
+      border-color: var(--green);
+    }
+    .check-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text);
+      line-height: 1.5;
+    }
+    .check-item.checked .check-text {
+      color: var(--text3);
+      text-decoration: line-through;
+    }
+
+    /* ── Steps ── */
+    .step-list {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .step {
+      display: flex;
+      gap: 0.9rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .step-num {
+      flex-shrink: 0;
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--border2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text2);
+      margin-top: 1px;
+      background: #fff;
+    }
+    .step-body { flex: 1; }
+    .step-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.3rem;
+    }
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--text2);
+      line-height: 1.65;
+      margin: 0;
+    }
+    .step-desc code {
+      background: #fff;
+      border: 1px solid var(--border2);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--green-dark);
+      font-family: 'Courier New', monospace;
+    }
+
+    /* ── Callouts ── */
+    .callout {
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+      line-height: 1.65;
+    }
+    .callout strong {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .callout.info {
+      background: var(--green-bg);
+      border-left: 4px solid var(--green);
+      color: #0e4428;
+    }
+    .callout.warn {
+      background: var(--amber-bg);
+      border-left: 4px solid var(--amber);
+      color: #4a2800;
+    }
+    .callout.danger {
+      background: var(--red-bg);
+      border-left: 4px solid var(--red);
+      color: #4a0e0e;
+    }
+
+    /* ── OBD location ── */
+    .obd-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem;
+      margin-top: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+    }
+    .obd-icon {
+      font-size: 2.25rem;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .obd-detail strong {
+      display: block;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+    .obd-detail p {
+      font-size: 0.88rem;
+      margin: 0;
+    }
+
+    /* ── Readings table ── */
+    .readings-list {
+      margin-top: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .reading-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .reading-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+    }
+    .reading-desc {
+      font-size: 0.85rem;
+      color: var(--text2);
+      margin-bottom: 0.6rem;
+      line-height: 1.5;
+    }
+    .reading-bands {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+    .band {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+    .band.good { background: #d4f0e4; color: #0a4a28; }
+    .band.warn { background: #fde8c0; color: #6a3000; }
+    .band.bad  { background: #fdd8d8; color: #6a0e0e; }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      height: 1px;
+      background: var(--border);
+      margin: 1.25rem 0;
+    }
+
+    /* ── Vehicle card ── */
+    .vehicle-card {
+      background: #fff;
+      border-bottom: 4px solid var(--border);
+      padding: 1.25rem;
+    }
+    .vc-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.75rem;
+    }
+    .vrn-plate {
+      display: inline-block;
+      background: #f7c400;
+      color: #111;
+      font-family: 'Courier New', monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      padding: 5px 16px 6px;
+      border-radius: 5px;
+      border: 2px solid #c9a200;
+      margin-bottom: 1rem;
+    }
+    .vc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.6rem 1rem;
+      margin-bottom: 0.9rem;
+    }
+    .vc-field-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 2px;
+    }
+    .vc-field-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.35;
+    }
+    .vc-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0.85rem 0;
+    }
+    .vc-contact {
+      display: flex;
+      flex-direction: column;
+      gap: 0.55rem;
+    }
+    .vc-contact-row {
+      display: flex;
+      gap: 0.65rem;
+      align-items: flex-start;
+    }
+    .vc-contact-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .vc-contact-text {
+      font-size: 0.88rem;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .vc-contact-text strong { color: var(--text); font-weight: 600; }
+    .vc-contact-text a {
+      color: var(--green-dark);
+      font-weight: 700;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="progress"></div>
+
+<header class="site-header">
+  <div class="header-brand">
+    <span class="bs-mark">BS</span>
+    <span class="brand-name">Battery Survey</span>
+  </div>
+  <h1 class="header-title">Harvester <em>Task Sheet</em></h1>
+  <div class="header-meta">
+    <span class="meta-chip">Renault Kangoo ZE</span>
+    <span class="meta-chip">CanZE app</span>
+    <span class="meta-chip">v1.1</span>
+  </div>
+</header>
+
+<nav class="step-nav">
+  <a href="#before">1 · Before you go</a>
+  <a href="#obd">2 · OBD port</a>
+  <a href="#app">3 · Run the app</a>
+  <a href="#record">4 · Record it</a>
+  <a href="#readings">5 · Readings</a>
+  <a href="#send">6 · Send it back</a>
+</nav>
+
+<div class="vehicle-card">
+  <div class="vc-label">This harvest</div>
+  <div class="vrn-plate">HG17 FZM</div>
+  <div class="vc-grid">
+    <div>
+      <div class="vc-field-label">Make</div>
+      <div class="vc-field-value">Renault</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Year</div>
+      <div class="vc-field-value">2017 (67 Reg)</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Model</div>
+      <div class="vc-field-value">Kangoo ML20 Z.E. Business</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Battery</div>
+      <div class="vc-field-value">30 kWh</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Fuel type</div>
+      <div class="vc-field-value">100% Electric</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Transmission</div>
+      <div class="vc-field-value">Automatic</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Mileage</div>
+      <div class="vc-field-value">13,380 miles</div>
+    </div>
+    <div>
+      <div class="vc-field-label">Availability</div>
+      <div class="vc-field-value">Weekdays 10am – 3pm</div>
+    </div>
+  </div>
+  <div class="vc-divider"></div>
+  <div class="vc-contact">
+    <div class="vc-contact-row">
+      <span class="vc-contact-icon">👤</span>
+      <div class="vc-contact-text"><strong>Contact:</strong> Gareth</div>
+    </div>
+    <div class="vc-contact-row">
+      <span class="vc-contact-icon">📍</span>
+      <div class="vc-contact-text">1 Grosvenor Road, Birkenhead, Prenton, CH43 4UR</div>
+    </div>
+    <div class="vc-contact-row">
+      <span class="vc-contact-icon">📞</span>
+      <div class="vc-contact-text"><a href="tel:01512016666">0151 201 6666</a></div>
+    </div>
+  </div>
+</div>
+
+<div class="page-content">
+
+  <!-- ── 1: Before you go ── -->
+  <div class="section" id="before">
+    <div class="section-header">
+      <div class="step-badge">1</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Before you go</div>
+        <h2>Check your kit</h2>
+      </div>
+    </div>
+    <p>Tick everything before you leave. A missing item means a wasted visit.</p>
+
+    <div class="checklist">
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Android phone charged — CanZE installed and opened at least once</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">ELM327 v1.5 Bluetooth dongle in your bag — <em>not</em> Wi-Fi, not v2.1</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Screen recording enabled and tested on your phone</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Address and owner contact number confirmed</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Vehicle confirmed as Kangoo ZE (not petrol Kangoo)</div>
+      </div>
+      <div class="check-item" onclick="toggleCheck(this)">
+        <div class="check-box"></div>
+        <div class="check-text">Battery Survey submission form bookmarked on phone</div>
+      </div>
+    </div>
+
+    <div class="callout warn" style="margin-top:1rem;">
+      <strong>Important</strong>
+      ELM327 v2.1 has a firmware bug that breaks CanZE's BMS connection on the Kangoo ZE. Must be v1.5 Bluetooth only.
+    </div>
+
+    <div class="callout info" style="margin-top:0.5rem;">
+      <strong>Download the app</strong>
+      CanZE app can be downloaded from the <a href="https://play.google.com/store/apps/details?id=lu.fisch.canze" target="_blank" rel="noopener" style="color:var(--green-dark);font-weight:700;">Google Play Store</a>. For more details check out <a href="https://canze.fisch.lu/" target="_blank" rel="noopener" style="color:var(--green-dark);font-weight:700;">canze.fisch.lu</a>.
+    </div>
+  </div>
+
+  <!-- ── 2: OBD port ── -->
+  <div class="section" id="obd">
+    <div class="section-header">
+      <div class="step-badge">2</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">At the vehicle</div>
+        <h2>Find the OBD port</h2>
+      </div>
+    </div>
+
+    <div class="obd-card">
+      <div class="obd-icon">🔌</div>
+      <div class="obd-detail">
+        <strong>Location — Kangoo ZE</strong>
+        <p>Under the driver's side dashboard, left of the steering column, near the fuse cover. 16-pin trapezoid socket. Plug in firmly — dongle LED will light within a few seconds.</p>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Ignition to ready mode</div>
+          <p class="step-desc">Key to position 2 or press start without brake. Dashboard lights on. Do not drive the vehicle.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Plug in the dongle</div>
+          <p class="step-desc">Seat it firmly. LED on dongle lights up. If no light after 10 seconds, reseat it.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Pair via Bluetooth</div>
+          <p class="step-desc">Phone Settings → Bluetooth → pair to <code>OBDII</code> or <code>V-LINK</code>. PIN: <code>1234</code> or <code>0000</code>. Do this before opening CanZE.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 3: Run the app ── -->
+  <div class="section" id="app">
+    <div class="section-header">
+      <div class="step-badge">3</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Connect</div>
+        <h2>Run the app</h2>
+      </div>
+    </div>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open CanZE</div>
+          <p class="step-desc">Settings → confirm adapter is <code>Bluetooth ELM</code>, vehicle is <code>Kangoo ZE</code>.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Connect to dongle</div>
+          <p class="step-desc">Tap <code>Connect</code>. Takes 10–20 seconds. Status bar turns green when connected.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Open Battery screens</div>
+          <p class="step-desc">Main menu → <code>Battery</code>. You need: Battery screen, Cell Detail screen, Charge History screen.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>If CanZE won't connect</strong>
+      Wait 30 seconds, retry. Still failing: unplug dongle, wait 10 seconds, reseat, retry. Three failed attempts = still a valid submission — record a video showing the attempt and note it in the form.
+    </div>
+  </div>
+
+  <!-- ── 4: Record it ── -->
+  <div class="section" id="record">
+    <div class="section-header">
+      <div class="step-badge">4</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Evidence</div>
+        <h2>Record it</h2>
+      </div>
+    </div>
+    <p>Start recording before you open CanZE. Read every value aloud. Do not stop recording until all three screens are captured.</p>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Start screen recording</div>
+          <p class="step-desc">Swipe down notification bar → Screen Record → confirm audio is on.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Battery screen — read aloud</div>
+          <p class="step-desc">SOH %, battery capacity (AHr or kWh), Hx value, pack voltage. Pause on each figure.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Cell Detail screen — read aloud</div>
+          <p class="step-desc">Highest and lowest cell voltages. Cell delta. Call out any red or yellow highlighted cells explicitly.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Charge History screen — read aloud</div>
+          <p class="step-desc">Total charge count, rapid charge count, any temperature warnings shown.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Stop and check the file</div>
+          <p class="step-desc">Play back the video. Confirm app is visible and voice is audible. Do not leave until you have checked this.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <strong>Submit the raw file</strong>
+      Do not edit or trim the recording. If you made a mistake, note it in the form — do not cut it out. Edited recordings will be rejected.
+    </div>
+  </div>
+
+  <!-- ── 5: Readings ── -->
+  <div class="section" id="readings">
+    <div class="section-header">
+      <div class="step-badge">5</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Reference</div>
+        <h2>What to look for</h2>
+      </div>
+    </div>
+    <p>You don't need to interpret the results — just record them accurately. Use this as a reference.</p>
+
+    <div class="readings-list">
+      <div class="reading-row">
+        <div class="reading-name">SOH %</div>
+        <div class="reading-desc">State of Health — remaining capacity relative to new.</div>
+        <div class="reading-bands">
+          <span class="band good">75%+ Good</span>
+          <span class="band warn">60–75% Fair</span>
+          <span class="band bad">&lt;60% Poor</span>
+        </div>
+      </div>
+      <div class="reading-row">
+        <div class="reading-name">Hx</div>
+        <div class="reading-desc">Internal resistance index — lower means higher resistance and faster degradation.</div>
+        <div class="reading-bands">
+          <span class="band good">80%+ Good</span>
+          <span class="band warn">60–80% Fair</span>
+          <span class="band bad">&lt;60% Poor</span>
+        </div>
+      </div>
+      <div class="reading-row">
+        <div class="reading-name">Cell delta</div>
+        <div class="reading-desc">Voltage gap between highest and lowest cell — large delta = cell imbalance.</div>
+        <div class="reading-bands">
+          <span class="band good">&lt;20mV Good</span>
+          <span class="band warn">20–50mV Fair</span>
+          <span class="band bad">&gt;50mV Poor</span>
+        </div>
+      </div>
+      <div class="reading-row">
+        <div class="reading-name">Rapid charge count</div>
+        <div class="reading-desc">DC rapid charges taken — high counts accelerate degradation on older ZE packs.</div>
+        <div class="reading-bands">
+          <span class="band good">&lt;50 Good</span>
+          <span class="band warn">50–100 Fair</span>
+          <span class="band bad">&gt;100 High</span>
+        </div>
+      </div>
+      <div class="reading-row">
+        <div class="reading-name">Pack voltage</div>
+        <div class="reading-desc">Total pack voltage at current charge level — record and report exactly.</div>
+        <div class="reading-bands">
+          <span class="band good">Record all values</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout danger" style="margin-top:1rem;">
+      <strong>Red cells or unusual readings</strong>
+      Do not intervene. Note exactly what you saw in the submission form. Your role is observation — not diagnosis or repair.
+    </div>
+  </div>
+
+  <!-- ── 6: Send it back ── -->
+  <div class="section" id="send">
+    <div class="section-header">
+      <div class="step-badge">6</div>
+      <div class="section-title-wrap">
+        <div class="section-eyebrow">Submit</div>
+        <h2>Send it back</h2>
+      </div>
+    </div>
+    <p>Submit before you leave the area. Do not wait until you get home.</p>
+
+    <div class="step-list">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <div class="step-title">Open the submission form</div>
+          <p class="step-desc">Battery Survey submission form — have your harvester ID ready.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <div class="step-title">Enter all readings</div>
+          <p class="step-desc">SOH, Hx, AHr, pack voltage, cell delta, charge counts, temperature readings. Enter exactly what the app showed — do not round figures.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <div class="step-title">Upload the screen recording</div>
+          <p class="step-desc">Attach the raw video file. Max 500MB. If larger, contact the Battery Survey team before submitting.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <div class="step-title">Note anything unusual</div>
+          <p class="step-desc">Use the notes field — slow connection, warning lights, anything the owner mentioned about the vehicle's history.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <div class="step-title">Submit — save your reference number</div>
+          <p class="step-desc">You'll get a reference number immediately. Save it. Your reward is processed against this reference within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <strong>Questions?</strong>
+      If anything is unclear or something unexpected happens, message the Battery Survey team using the contact in your onboarding email. Do not guess. A bad battery result is just as valuable as a good one — honest data is the whole point.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  function toggleCheck(el) {
+    el.classList.toggle('checked');
+    const box = el.querySelector('.check-box');
+    box.textContent = el.classList.contains('checked') ? '✓' : '';
+  }
+
+  function updateProgress() {
+    const scrolled = window.scrollY;
+    const total = document.body.scrollHeight - window.innerHeight;
+    const pct = total > 0 ? (scrolled / total) * 100 : 0;
+    document.getElementById('progress').style.width = pct + '%';
+  }
+
+  window.addEventListener('scroll', updateProgress, { passive: true });
+</script>
+
+</body>
+</html>
